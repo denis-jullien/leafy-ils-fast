@@ -1,17 +1,50 @@
-from datetime import timedelta  
-from typing import Annotated  
   
-from fastapi import Depends, FastAPI, HTTPException  
-from fastapi.security import OAuth2PasswordRequestForm  
-  
-from auth import create_token, authenticate_user, RoleChecker, get_current_active_user, validate_refresh_token  
-from data import fake_users_db, refresh_tokens  
-from models import User, Token  
-  
-app = FastAPI()  
-  
-ACCESS_TOKEN_EXPIRE_MINUTES = 20  
-REFRESH_TOKEN_EXPIRE_MINUTES = 120  
+from contextlib import asynccontextmanager
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
+from fastapi.responses import HTMLResponse, RedirectResponse
+
+from app.db import User, create_db_and_tables
+from app.schemas import UserCreate, UserRead, UserUpdate
+from app.users import auth_backend, auth_cookie_backend, current_active_user, fastapi_users
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Not needed if you setup a migration system like Alembic
+    await create_db_and_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)  
+
+app.include_router(
+    fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
+)
+app.include_router(
+    fastapi_users.get_auth_router(auth_cookie_backend), prefix="/auth/cookie", tags=["auth"]
+)
+app.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreate),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_reset_password_router(),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_verify_router(UserRead),
+    prefix="/auth",
+    tags=["auth"],
+)
+app.include_router(
+    fastapi_users.get_users_router(UserRead, UserUpdate),
+    prefix="/users",
+    tags=["users"],
+)
+
+from fastapi.templating import Jinja2Templates
+templates = Jinja2Templates(directory="templates")
   
 @app.get("/")  
 def hello_func():  
@@ -21,43 +54,22 @@ def hello_func():
 def hello_func():  
   return "Hello World"  
  
-@app.get("/data")  
-def get_data(_: Annotated[bool, Depends(RoleChecker(allowed_roles=["admin"]))]):  
-  return {"data": "This is important data"}
-  
-@app.post("/token")  
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:  
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)  
-    if not user:  
-        raise HTTPException(status_code=400, detail="Incorrect username or password")  
-      
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)  
-    refresh_token_expires = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)  
-      
-    access_token = create_token(data={"sub": user.username, "role": user.role}, expires_delta=access_token_expires)  
-    refresh_token = create_token(data={"sub": user.username, "role": user.role}, expires_delta=refresh_token_expires)  
-    refresh_tokens.append(refresh_token)  
-    return Token(access_token=access_token, refresh_token=refresh_token)  
-  
-@app.post("/refresh")  
-async def refresh_access_token(token_data: Annotated[tuple[User, str], Depends(validate_refresh_token)]):  
-    user, token = token_data  
-    access_token = create_token(data={"sub": user.username, "role": user.role}, expires_delta=access_token_expires)  
-    refresh_token = create_token(data={"sub": user.username, "role": user.role}, expires_delta=refresh_token_expires)  
-  
-    refresh_tokens.remove(token)  
-    refresh_tokens.append(refresh_token)  
-    return Token(access_token=access_token, refresh_token=refresh_token)
-  
-@app.get("/users/me/", response_model=User)
-async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-):
-    return current_user
+@app.get("/login", response_class=HTMLResponse)
+def login_get(request: Request):
+    context = {
+        "request": request,
+    }
+    return templates.TemplateResponse("login.html", context)
 
-
-@app.get("/users/me/items/")
-async def read_own_items(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-):
-    return [{"item_id": "Foo", "owner": current_user.username}]
+# A private page that only logged in users can access.
+@app.get("/private", response_class=HTMLResponse)
+def index(request: Request, user: User = Depends(current_active_user)):
+    context = {
+        "user": user,
+        "request": request
+    }
+    return templates.TemplateResponse("private.html", context)
+ 
+@app.get("/authenticated-route")
+async def authenticated_route(user: User = Depends(current_active_user)):
+    return {"message": f"Hello {user.email}!"}
