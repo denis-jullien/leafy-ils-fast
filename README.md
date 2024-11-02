@@ -1,6 +1,8 @@
 # Leafy ILS
 
-##
+## Tailwind 
+
+``npx tailwindcss -i templates/main.css -o static/css/main.css --watch``
 
 ## Sources
 

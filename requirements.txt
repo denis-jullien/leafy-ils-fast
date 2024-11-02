@@ -4,4 +4,3 @@ fastapi-users[sqlalchemy]
 sqlmodel
 aiosqlite
 starlette-admin
-pytailwindcss

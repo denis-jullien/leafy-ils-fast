@@ -2,6 +2,7 @@
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.db import User, create_db_and_tables
 from app.schemas import UserCreate, UserRead, UserUpdate
@@ -16,6 +17,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)  
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -47,9 +50,10 @@ app.include_router(
 from fastapi.templating import Jinja2Templates
 templates = Jinja2Templates(directory="templates")
   
-@app.get("/")  
-def hello_func():  
-  return "Hello World !"  
+@app.get("/")
+async def home(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("base.html", context)
  
 @app.get("/hello")  
 def hello_func():  
