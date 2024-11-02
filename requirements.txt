@@ -3,3 +3,5 @@ fastapi-users ~= 13.0.0
 fastapi-users[sqlalchemy]
 sqlmodel
 aiosqlite
+starlette-admin
+pytailwindcss

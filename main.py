@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from app.db import User, create_db_and_tables
 from app.schemas import UserCreate, UserRead, UserUpdate
 from app.users import auth_backend, auth_cookie_backend, current_active_user, fastapi_users
+from app.admin import admin
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -73,3 +74,6 @@ def index(request: Request, user: User = Depends(current_active_user)):
 @app.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello {user.email}!"}
+
+# Mount admin to your app
+admin.mount_to(app)

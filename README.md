@@ -4,8 +4,8 @@
 
 ## Sources
 
-https://stackademic.com/blog/fastapi-role-base-access-control-with-jwt-9fa2922a088c
-https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
+https://github.com/jowilf/starlette-admin-demo/tree/main
+https://ezzeddinabdullah.com/post/fastapi-tailwind-sqlalchemy/
 
 ## Inspirations
 
@@ -16,3 +16,6 @@ https://github.com/timmashkov/fastapi_shop
 https://github.com/mjhea0/awesome-fastapi
 
 
+# TODO
+
+https://jowilf.github.io/starlette-admin/user-guide/authentication/
