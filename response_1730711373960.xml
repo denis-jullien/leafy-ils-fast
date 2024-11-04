@@ -1,0 +1,60 @@
+<!--ISSN = False-->
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bibo="http://purl.org/ontology/bibo/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dctype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:rdafrbr1="http://rdvocab.info/RDARelationshipsWEMI/" xmlns:marcrel="http://id.loc.gov/vocabulary/relators/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:gr="http://purl.org/goodrelations/v1#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:isbd="http://iflastandards.info/ns/isbd/elements/" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:rdafrbr2="http://RDVocab.info/uri/schema/FRBRentitiesRDA/" xmlns:rdaelements="http://rdvocab.info/Elements/" xmlns:rdac="http://rdaregistry.info/Elements/c/" xmlns:rdau="http://rdaregistry.info/Elements/u/" xmlns:rdaw="http://rdaregistry.info/Elements/w/" xmlns:rdae="http://rdaregistry.info/Elements/e/" xmlns:rdam="http://rdaregistry.info/Elements/m/" xmlns:rdai="http://rdaregistry.info/Elements/i/" xmlns:sudoc="http://www.sudoc.fr/ns/" xmlns:bnf-onto="http://data.bnf.fr/ontology/bnf-onto/" xmlns:fabio="http://purl.org/spar/fabio/" xmlns:gn="http://www.geonames.org/ontology">
+  <bibo:Document rdf:about="http://www.sudoc.fr/275692116">
+    <foaf:primaryTopic rdf:resource="http://www.sudoc.fr/275692116/id">
+    </foaf:primaryTopic>
+    <dcterms:identifier>275692116</dcterms:identifier>
+    <dcterms:creator rdf:resource="http://www.idref.fr/033702462/id">
+    </dcterms:creator>
+    <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2024-02-14</dcterms:created>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-02-14T08:39:48</dcterms:modified>
+  </bibo:Document>
+  <bibo:Book rdf:about="http://www.sudoc.fr/275692116/id">
+    <!--content form (isbd), media type (rda)-->
+    <isbd:P1001>
+      <skos:Concept rdf:about="http://iflastandards.info/ns/isbd/terms/contentform/T1009">
+        <skos:prefLabel xml:lang="en">text</skos:prefLabel>
+      </skos:Concept>
+    </isbd:P1001>
+    <!--rda:content type-->
+    <rdau:P60049>
+      <skos:Concept rdf:about="http://rdaregistry.info/termList/RDAContentType/1020">
+        <skos:prefLabel xml:lang="en">text</skos:prefLabel>
+      </skos:Concept>
+    </rdau:P60049>
+    <dc:type>Text</dc:type>
+    <!--media type-->
+    <isbd:P1003>
+      <skos:Concept rdf:about="http://iflastandards.info/ns/isbd/terms/mediatype/T1010">
+        <skos:prefLabel xml:lang="en">unmediated</skos:prefLabel>
+      </skos:Concept>
+    </isbd:P1003>
+    <dcterms:language rdf:resource="http://lexvo.org/id/iso639-3/fra">
+    </dcterms:language>
+    <gn:countryCode>FR</gn:countryCode>
+    <bibo:isbn13>9782377940820</bibo:isbn13>
+    <bnf-onto:FRBNF>47077911</bnf-onto:FRBNF>
+    <!--data.bnf.fr-->
+    <owl:sameAs rdf:resource="http://data.bnf.fr/ark:/12148/cb47077911q">
+    </owl:sameAs>
+    <gr:hasEAN_UCC-13>9782377940820</gr:hasEAN_UCC-13>
+    <dc:title>Moi, François le Français  / Georges Piombo</dc:title>
+    <!--rda elements obsolète : voir rdam:P30003-->
+    <rdaelements:modeOfIssuance>
+      <skos:Concept rdf:about="http://RDVocab.info/termLIst/ModeIssue/1001">
+        <skos:prefLabel xml:lang="en">Single unit</skos:prefLabel>
+      </skos:Concept>
+    </rdaelements:modeOfIssuance>
+    <!--mode of issuance-->
+    <rdam:P30003>
+      <skos:Concept rdf:about="http://RDVocab.info/termLIst/ModeIssue/1001">
+        <skos:prefLabel xml:lang="en">Single unit</skos:prefLabel>
+      </skos:Concept>
+    </rdam:P30003>
+    <dc:date>2022</dc:date>
+    <dc:publisher>Paris : Éditions Libre &amp; Solidaire , 2022</dc:publisher>
+    <dc:publisher>Paris : Éditions Libre &amp; Solidaire , 2022</dc:publisher>
+    <dc:format>1 vol. (186 p.) ; 23 cm</dc:format>
+    <dcterms:abstract>La vie est une aventure. Ma mère et mon père, une histoire d&apos;amour au-dessus de tout. Il l&apos;a enlevée, ils ont fait la « carrossela », sont partis sans se retourner, ont quitté le pays, la famiglia. Quand l&apos;amour est le plus fort, l&apos;enfant paraît. L&apos;enfant c&apos;est moi, François le Français. Je veux être le meilleur Français possible, servir mon pays, m&apos;émanciper ailleurs. D&apos;autant plus qu&apos;elle ne m&apos;aime plus, ses soleils ne brillent plus pour moi. Je m&apos;en vais traverser la guerre, le siècle. Je veux devenir riche ; riche de quoi ? La vie est une aventure, rencontrer l&apos;autre est une jouissance.</dcterms:abstract>
+  </bibo:Book>
+</rdf:RDF>

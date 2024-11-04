@@ -9,6 +9,8 @@ from app.schemas import UserCreate, UserRead, UserUpdate
 from app.users import auth_backend, auth_cookie_backend, current_active_user, fastapi_users
 from app.admin import admin
 
+import httpx
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Not needed if you setup a migration system like Alembic
@@ -53,7 +55,7 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/")
 async def home(request: Request):
     context = {"request": request}
-    return templates.TemplateResponse("base.html", context)
+    return templates.TemplateResponse("index.html", context)
  
 @app.get("/hello")  
 def hello_func():  
@@ -78,6 +80,61 @@ def index(request: Request, user: User = Depends(current_active_user)):
 @app.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello {user.email}!"}
+
+import xml.etree.ElementTree as ET
+from io import StringIO  
+from pymarc import marcxml
+from rdflib import Graph, RDF
+
+@app.get("/notice")  
+async def hello_func():  
+    async with httpx.AsyncClient() as client:
+        
+        isbn = "978-2013944762"
+        r = await client.get(f'https://www.sudoc.fr/services/isbn2ppn/{isbn}')
+        # print(r.text)
+        
+        root = ET.fromstring(r.text)
+        # print(root.tag)
+        
+        if root.find('error') != None :
+            print("return isbn2ppn Error !")
+        
+        x = root.find('query/resultNoHolding')
+        if x == None:
+            x = root.find('query/result')
+            
+        ppn = x.find('ppn').text
+        print(f"Got PPN: {ppn}")
+            
+        r = await client.get(f'https://www.sudoc.fr/{ppn}.rdf')
+        print(r.text)
+        
+        # Create a Graph
+        g = Graph()
+
+        # Parse in an RDF file hosted on the Internet
+        g.parse(StringIO(r.text), format='application/rdf+xml')
+
+        
+        knows_query3 = """
+        select ?book ?title ?abstract ?date ?publisher ?format where {
+            ?book a bibo:Book . 
+            ?book dc:title ?title .
+            OPTIONAL { ?book dcterms:abstract ?abstract }
+            ?book dc:date ?date .
+            ?book dc:publisher ?publisher .
+            ?book dc:format ?format .
+        }"""
+
+
+        qres = g.query(knows_query3)
+        for row in qres:
+            print(row)
+            # print(f"{row.book} knows {row.title}")
+        
+        
+    return "Hello World"  
 
 # Mount admin to your app
 admin.mount_to(app)
