@@ -1,3 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+    
+{% block content %}
+
+<div class="flex justify-center mt-10">
+    <div class="flex flex-col gap-4 rounded-box bg-base-200 p-6 max-w-md grow">
+        <h1 class="text-3xl font-bold self-center">Log in</h1>
+    
+        <span class="self-center">
+            Don't have an account?
+            <a class="link link-secondary">Register</a>
+        </span>
+    
+        <a class="btn btn-neutral">
+            <i class="fa-brands fa-google text-primary"></i>
+            Log in with Google
+        </a>
+    
+        <div class="divider">OR</div>
+
+        <form class="flex flex-col gap-4">
+    
+            <label class="form-control">
+                <div class="label">
+                    <span class="label-text">Email</span>
+                </div>
+        
+                <input class="input input-bordered" type="email" name="username" value="user@example.com"/>
+            </label>
+        
+            <label class="form-control">
+                <div class="label">
+                    <span class="label-text">Password</span>
+                    <a class="label-text link link-accent">Forgot password?</a>
+                </div>
+        
+                <input type="password" name="password" class="input input-bordered" value="string"/>
+            </label>
+        
+            <div class="form-control">
+                <label class="cursor-pointer label self-start gap-2">
+                    <input type="checkbox" class="checkbox" />
+                    <span class="label-text">Remember me</span>
+                </label>
+            </div>
+        
+            <button id="button-login" class="btn btn-primary" hx-post="/auth/cookie/login">Log in</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('htmx:afterRequest', 
+        function (event) {
+        if (event.detail.target.id === 
+        'button-login' && event.detail.successful === true) {
+            window.location.href = '/'
+        }
+    })
+</script>
+
 <h1>Login 🫥</h1>
 
 {% for error in errors %}
@@ -18,3 +80,5 @@
 <hr>
 
 {% include '_site_map.html' %}
+
+{% endblock %}
