@@ -42,4 +42,6 @@ https://www.leslibraires.fr/recherche/?q=9782246831457
 https://www.googleapis.com/books/v1/volumes?q=isbn:9782246831457
 https://developers.google.com/books/docs/viewer/developers_guide?hl=fr
 
+## Parsing
 https://github.com/gwu-libraries/launchpad/blob/8901f91e3dc458baf97a09f0da8dc51218387c8e/lp/ui/apis.py#L57
+https://github.com/safwansamsudeen/infilib/blob/main/src/lib/helpers.js#L270

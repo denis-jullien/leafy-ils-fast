@@ -4,4 +4,7 @@ fastapi-users[sqlalchemy]
 sqlmodel
 aiosqlite
 starlette-admin
-pymarc
+pydantic-extra-types
+pycountry
+devtools
+rdflib

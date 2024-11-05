@@ -1,4 +1,3 @@
-  
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -83,14 +82,21 @@ async def authenticated_route(user: User = Depends(current_active_user)):
 
 import xml.etree.ElementTree as ET
 from io import StringIO  
-from pymarc import marcxml
 from rdflib import Graph, RDF
+from app.books import Book, clean_isbn
+from devtools import pprint, debug
 
+
+# Example isbn
+# 978-2013944762
+# 9782253067900 
+# 9782377940820
+# 9782070438617
 @app.get("/notice")  
-async def hello_func():  
+async def hello_func(in_isbn: str):  
     async with httpx.AsyncClient() as client:
         
-        isbn = "978-2013944762"
+        isbn = clean_isbn(in_isbn) #"978-2013944762"
         r = await client.get(f'https://www.sudoc.fr/services/isbn2ppn/{isbn}')
         # print(r.text)
         
@@ -108,7 +114,7 @@ async def hello_func():
         print(f"Got PPN: {ppn}")
             
         r = await client.get(f'https://www.sudoc.fr/{ppn}.rdf')
-        print(r.text)
+        # print(r.text)
         
         # Create a Graph
         g = Graph()
@@ -130,11 +136,24 @@ async def hello_func():
 
         qres = g.query(knows_query3)
         for row in qres:
-            print(row)
-            # print(f"{row.book} knows {row.title}")
+            debug(row)
+            print(f"{row.book} knows {row.title}")
+        
+            
+            book = Book(title = row.title,
+                abstract = row.abstract or "",
+                publication_year = row.date,
+                publisher = row.publisher,
+                author = row.title,
+                format = row.format,
+                language='fr',
+                isbn13= isbn
+                )
+        
+        debug(book)
         
         
-    return "Hello World"  
+    return book
 
 # Mount admin to your app
 admin.mount_to(app)

@@ -55,30 +55,10 @@
         function (event) {
         if (event.detail.target.id === 
         'button-login' && event.detail.successful === true) {
-            window.location.href = '/'
+            window.location.href = '/private'
         }
     })
 </script>
 
-<h1>Login 🫥</h1>
-
-{% for error in errors %}
-    <p style="color: red">{{ error }}</p>
-{% endfor %}
-<form action="/auth/cookie/login" method="post">
-    <p>
-        <p><label for="">Email</label></p>
-        <input type="email" name="username" value="{{ username }}" required>
-    </p>
-    <p>
-        <p><label for="">Password</label></p>
-        <input type="password" name="password" value="{{ password }}" required>
-    </p>
-    <input type="submit" value="Submit">
-</form>
-
-<hr>
-
-{% include '_site_map.html' %}
 
 {% endblock %}
