@@ -4,6 +4,10 @@
 
 ``npx tailwindcss -i templates/main.css -o static/css/main.css --watch``
 
+## Launcher
+
+- FastAPI: `fastapi dev main.py`
+
 ## Sources
 
 https://github.com/jowilf/starlette-admin-demo/tree/main
