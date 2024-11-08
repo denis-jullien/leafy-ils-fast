@@ -25,6 +25,8 @@ Note: use a venv for python installation
     - pip install "fastapi[standard]"
 - SQLModel:
     - pip install sqlmodel
+- static analysis
+    - pip install ruff
 
 ## Launcher
 
