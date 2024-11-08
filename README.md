@@ -1,12 +1,38 @@
 # Leafy ILS
 
-## Tailwind 
+```mermaid
+flowchart TD
+    subgraph Backend["FastAPI (Backend)"]
+    Auth["FastAPI Users (Auth)"]
+    end
+    Frontend["HTMx (Frontend)"] <--API REST--> Backend
+    Backend <--SQLModel--> Database[(SQLite)]
+```
 
-``npx tailwindcss -i templates/main.css -o static/css/main.css --watch``
+## Requirements
+
+Note: use a venv for python installation
+    python3 -m venv venv
+    source venv/bin/activate
+    deactivate
+
+- global:
+    - python
+    - pip
+- FastAPI:
+    - pip install starlette
+    - pip install pydantic
+    - pip install "fastapi[standard]"
+- SQLModel:
+    - pip install sqlmodel
 
 ## Launcher
 
 - FastAPI: `fastapi dev main.py`
+
+## Tailwind
+
+``npx tailwindcss -i templates/main.css -o static/css/main.css --watch``
 
 ## Sources
 
