@@ -45,6 +45,7 @@ https://github.com/mjhea0/awesome-fastapi
 https://components.willpinha.link/
 https://pagedone.io/blocks#product-Marketing
 https://github.com/nyash04/daisyui-landing-page
+https://tailwindui.com/components/marketing/sections/blog-sections
 
 ## daisyui theme
 https://github.com/Serendipity-Theme/daisy-ui

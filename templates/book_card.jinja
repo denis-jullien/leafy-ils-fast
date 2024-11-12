@@ -4,7 +4,7 @@
     <div class="flex justify-between items-center">
         <span class="text-sm">{{ book.publication_year }}</span>
 
-        <a class="btn btn-sm btn-primary">Design</a>
+        <a class="btn btn-sm btn-primary">Roman</a>
     </div>
 
     <!-- Body -->
@@ -14,20 +14,28 @@
         </a>
 
         <span>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tempora expedita dicta totam
-            aspernatur doloremque.
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+{#            Tempora expedita dicta totam aspernatur doloremque.#}
         </span>
     </div>
 
+            <!-- Stars -->
+        <div class="flex gap-2 text-accent">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+        </div>
+
     <!-- Footer -->
     <div class="flex justify-between items-center">
-        <a class="link link-accent">Read more</a>
 
-        <a class="btn btn-ghost">
+        <a class="btn btn-ghost p-0">
             <img alt="Profile" src="{{ url_for('static', path='/images/avatar.png') }}"
                  class="w-8 rounded-full"/>
 
-            User name
+            {{ book.author }}
         </a>
     </div>
 </div>

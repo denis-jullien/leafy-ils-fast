@@ -109,19 +109,93 @@ async def isbn2book(in_isbn: str):
         debug(book)
 
     return book
-  
+
+def booklist():
+    return [
+        Book(
+            title="Je t'aimerai toujours, quoi qu'il arrive",
+            author="Debi Gliori  ; [adaptation française de Marie-France Floury]",
+            publisher='Paris : Gautier-Languereau , impr. 2014',
+            isbn13=9782013944762,
+            publication_year=2014,
+            abstract='',
+            language='fr',
+            format='1 vol. (non paginé [30] p.) : ill. en coul., couv. ill. en coul. ; 18 cm',
+            url=None
+        ),
+        Book(
+            title='La végétarienne',
+            author='Han Kang  ; traduit du coréen par Jeong Eun-Jin & Jacques Batilliot',
+            publisher='Paris : le Livre de poche , DL 2016',
+            isbn13=9782253067900,
+            publication_year=2016,
+            abstract='',
+            language='fr',
+            format='1 volume (211 pages) : couverture illustrée ; 18 cm',
+            url=None,
+        ) ,
+        Book(
+            title='Moi, François le Français',
+            author='Georges Piombo',
+            publisher='Paris : Éditions Libre & Solidaire , 2022',
+            isbn13=9782377940820,
+            publication_year=2022,
+            abstract=(
+                "La vie est une aventure. Ma mère et mon père, une histoire d'amour au-dessus de tout. Il l'a enlevée, ils"
+                " ont fait la « carrossela », sont partis sans se retourner, ont quitté le pays, la famiglia. Quand l'amou"
+                "r est le plus fort, l'enfant paraît. L'enfant c'est moi, François le Français. Je veux être le meilleur F"
+                "rançais possible, servir mon pays, m'émanciper ailleurs. D'autant plus qu'elle ne m'aime plus, ses soleil"
+                "s ne brillent plus pour moi. Je m'en vais traverser la guerre, le siècle. Je veux devenir riche ; riche d"
+                "e quoi ? La vie est une aventure, rencontrer l'autre est une jouissance."
+            ),
+            language='fr',
+            format='1 vol. (186 p.) ; 23 cm',
+            url=None,
+        ) ,
+        Book(
+            title="Le dernier restaurant avant la fin du monde",
+            author="Douglas Adams  ; traduit de l'anglais par Jean Bonnefoy",
+            publisher='[Paris] : [Gallimard] , DL 2000',
+            isbn13=9782070438617,
+            publication_year=2000,
+            abstract=(
+                'La cuisine anglaise est exécrable. Moins abominable, cependant, que la poésie des Vogons, un peuple fier,'
+                " ombrageux, et éminament irritable. D'ailleurs, les Vogons ont fait sauter la planète Terre, soi-disant p"
+                "ar erreur. Pas de panique ! Grâce au fabuleux 'Guide du voyageur galactique', le pauvre Arthur Dent, ex-c"
+                "itoyen britannique désormais apatride et passablement désemparé devant tant d'inconvenance, pourra affron"
+                "ter sans crainte les improbables méandres d'un univers en folie. Rien ne l'empêchera, pas même un ascense"
+                "ur dépressif, d'arriver à temps pour déguster le Plat du jour au Dernier Restaurant avant la Fin du Monde"
+                '.'
+            ),
+            language='fr',
+            format='1 vol. (279 p.) : couv. ill. en coul. ; 18 cm',
+            url=None,
+        ),
+        Book(
+            title='Moi, François le Français',
+            author='Georges Piombo',
+            publisher='Paris : Éditions Libre & Solidaire , 2022',
+            isbn13=9782377940820,
+            publication_year=2022,
+            abstract=(
+                "La vie est une aventure. Ma mère et mon père, une histoire d'amour au-dessus de tout. Il l'a enlevée, ils"
+                " ont fait la « carrossela », sont partis sans se retourner, ont quitté le pays, la famiglia. Quand l'amou"
+                "r est le plus fort, l'enfant paraît. L'enfant c'est moi, François le Français. Je veux être le meilleur F"
+                "rançais possible, servir mon pays, m'émanciper ailleurs. D'autant plus qu'elle ne m'aime plus, ses soleil"
+                "s ne brillent plus pour moi. Je m'en vais traverser la guerre, le siècle. Je veux devenir riche ; riche d"
+                "e quoi ? La vie est une aventure, rencontrer l'autre est une jouissance."
+            ),
+            language='fr',
+            format='1 vol. (186 p.) ; 23 cm',
+            url=None,
+        )
+    ]
 @app.get("/")
 async def home(request: Request):
 
     context = {
         "request": request,
-        "carousell_books" : [
-            await isbn2book("978-2013944762"),
-            await isbn2book("9782253067900"),
-            await isbn2book("9782377940820"),
-            await isbn2book("9782070438617"),
-            await isbn2book("978-2013944762"),
-        ],
+        "carousell_books" : booklist(),
     }
     return templates.TemplateResponse("index.html", context)
 
@@ -174,4 +248,4 @@ if __name__ == "__main__":
     import uvicorn
 
     # uvicorn.run(app, host="0.0.0.0", port=80)
-    uvicorn.run('main:app', host="0.0.0.0", port=80, reload=True)
+    uvicorn.run('main:app', host="0.0.0.0", port=8000, reload=True)
