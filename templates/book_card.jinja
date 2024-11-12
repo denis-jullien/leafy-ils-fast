@@ -1,0 +1,33 @@
+<!-- Card -->
+<div class="flex flex-col gap-6 bg-base-200 rounded-box p-6 max-w-xl">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <span class="text-sm">{{ book.publication_year }}</span>
+
+        <a class="btn btn-sm btn-primary">Design</a>
+    </div>
+
+    <!-- Body -->
+    <div class="flex flex-col gap-2">
+        <a class="text-xl font-bold link">
+            {{ book.title }}
+        </a>
+
+        <span>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tempora expedita dicta totam
+            aspernatur doloremque.
+        </span>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-between items-center">
+        <a class="link link-accent">Read more</a>
+
+        <a class="btn btn-ghost">
+            <img alt="Profile" src="{{ url_for('static', path='/images/avatar.png') }}"
+                 class="w-8 rounded-full"/>
+
+            User name
+        </a>
+    </div>
+</div>

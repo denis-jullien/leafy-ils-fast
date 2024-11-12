@@ -50,11 +50,81 @@ app.include_router(
 
 from fastapi.templating import Jinja2Templates
 templates = Jinja2Templates(directory="templates")
+
+
+async def isbn2book(in_isbn: str):
+    async with httpx.AsyncClient() as client:
+
+        isbn = clean_isbn(in_isbn)  # "978-2013944762"
+        r = await client.get(f'https://www.sudoc.fr/services/isbn2ppn/{isbn}')
+        # print(r.text)
+
+        root = ET.fromstring(r.text)
+        # print(root.tag)
+
+        if root.find('error') != None:
+            print("return isbn2ppn Error !")
+
+        x = root.find('query/resultNoHolding')
+        if x == None:
+            x = root.find('query/result')
+
+        ppn = x.find('ppn').text
+        print(f"Got PPN: {ppn}")
+
+        r = await client.get(f'https://www.sudoc.fr/{ppn}.rdf')
+        # print(r.text)
+
+        # Create a Graph
+        g = Graph()
+
+        # Parse in an RDF file hosted on the Internet
+        g.parse(StringIO(r.text), format='application/rdf+xml')
+
+        knows_query3 = """
+        select ?book ?title ?abstract ?date ?publisher ?format where {
+            ?book a bibo:Book . 
+            ?book dc:title ?title .
+            OPTIONAL { ?book dcterms:abstract ?abstract }
+            ?book dc:date ?date .
+            ?book dc:publisher ?publisher .
+            ?book dc:format ?format .
+        }"""
+
+        qres = g.query(knows_query3)
+        for row in qres:
+            debug(row)
+            print(f"{row.book} knows {row.title}")
+
+            book = Book(title=row.title,
+                        abstract=row.abstract or "",
+                        publication_year=row.date,
+                        publisher=row.publisher,
+                        author=row.title,
+                        format=row.format,
+                        language='fr',
+                        isbn13=isbn,
+                        )
+
+        debug(book)
+
+    return book
   
 @app.get("/")
 async def home(request: Request):
-    context = {"request": request}
+
+    context = {
+        "request": request,
+        "carousell_books" : [
+            await isbn2book("978-2013944762"),
+            await isbn2book("9782253067900"),
+            await isbn2book("9782377940820"),
+            await isbn2book("9782070438617"),
+            await isbn2book("978-2013944762"),
+        ],
+    }
     return templates.TemplateResponse("index.html", context)
+
  
 @app.get("/hello")  
 def hello_func():  
@@ -93,67 +163,15 @@ from devtools import pprint, debug
 # 9782377940820
 # 9782070438617
 @app.get("/notice")  
-async def hello_func(in_isbn: str):  
-    async with httpx.AsyncClient() as client:
+async def hello_func(in_isbn: str):
         
-        isbn = clean_isbn(in_isbn) #"978-2013944762"
-        r = await client.get(f'https://www.sudoc.fr/services/isbn2ppn/{isbn}')
-        # print(r.text)
-        
-        root = ET.fromstring(r.text)
-        # print(root.tag)
-        
-        if root.find('error') != None :
-            print("return isbn2ppn Error !")
-        
-        x = root.find('query/resultNoHolding')
-        if x == None:
-            x = root.find('query/result')
-            
-        ppn = x.find('ppn').text
-        print(f"Got PPN: {ppn}")
-            
-        r = await client.get(f'https://www.sudoc.fr/{ppn}.rdf')
-        # print(r.text)
-        
-        # Create a Graph
-        g = Graph()
-
-        # Parse in an RDF file hosted on the Internet
-        g.parse(StringIO(r.text), format='application/rdf+xml')
-
-        
-        knows_query3 = """
-        select ?book ?title ?abstract ?date ?publisher ?format where {
-            ?book a bibo:Book . 
-            ?book dc:title ?title .
-            OPTIONAL { ?book dcterms:abstract ?abstract }
-            ?book dc:date ?date .
-            ?book dc:publisher ?publisher .
-            ?book dc:format ?format .
-        }"""
-
-
-        qres = g.query(knows_query3)
-        for row in qres:
-            debug(row)
-            print(f"{row.book} knows {row.title}")
-        
-            
-            book = Book(title = row.title,
-                abstract = row.abstract or "",
-                publication_year = row.date,
-                publisher = row.publisher,
-                author = row.title,
-                format = row.format,
-                language='fr',
-                isbn13= isbn
-                )
-        
-        debug(book)
-        
-        
-    return book
+    return isbn2book(in_isbn)
 
 # Mount admin to your app
 admin.mount_to(app)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    # uvicorn.run(app, host="0.0.0.0", port=80)
+    uvicorn.run('main:app', host="0.0.0.0", port=80, reload=True)

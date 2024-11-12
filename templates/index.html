@@ -1,50 +1,313 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block title %}Index{% endblock %}
-    
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+{% endblock %}
+
 {% block content %}
 
-<div class="flex justify-center mt-10">
-    <div class="flex flex-col items-center text-center gap-6 max-w-lg">
-        <a class="btn btn-neutral">
-            PRO release - Join waitlist
-            <i class="fa-solid fa-circle-arrow-right text-lg"></i>
-        </a>
-  
-        <h1 class="font-bold text-5xl">
-            Let's build
-            <span class="text-primary">Together</span>
-        </h1>
-  
-        <span>
+
+    <div class="hero max-w-7xl mx-auto bg-[url('/static/images/annie-spratt-0ZPSX_mQ3xI-unsplash.jpg')] bg-center rounded-box">
+        <div class="hero-overlay bg-opacity-60 rounded-box"></div>
+        <div class="hero-content ">
+            <div class="max-w-full">
+
+                <h1 class="mb-5 text-neutral-content text-center text-5xl font-bold">    Nos livres récents</h1>
+
+                <p class="mb-5 text-neutral-content">
+                    Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
+                    quasi. In deleniti eaque aut repudiandae et a id nisi.
+                </p>
+                <!-- Slider main container -->
+                <div class="swiper">
+                    <!-- Additional required wrapper -->
+                    <div class="swiper-wrapper">
+                        <!-- Slides -->
+                        {% for book in carousell_books %}
+                            <div class="swiper-slide">
+                                {% include "book_card.jinja" %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <!-- If we need pagination -->
+                    <div class="swiper-pagination"></div>
+
+                    <!-- If we need navigation buttons -->
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+
+                    <!-- If we need scrollbar -->
+                    {#  <div class="swiper-scrollbar"></div>#}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .swiper {
+            width: 1200px;
+            height: 500px;
+        }
+
+
+
+    </style>
+    <script>
+        var swiper = new Swiper('.swiper', {
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: true,
+            },
+
+
+            // Optional parameters
+            slidesPerView: 4,
+            spaceBetween: 30,
+            loop: true,
+
+            // If we need pagination
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+
+            // Navigation arrows
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+
+
+        });
+    </script>
+
+    <div class="flex justify-center p-10 mt-10 ">
+        <div class="flex flex-col items-center text-center gap-6 max-w-7xl">
+            <h1 class="font-bold text-3xl">
+                Nos livres
+                <span class="text-primary">récents</span>
+            </h1>
+
+            <span>
             App Name is an open-source application that leverages your bussiness and help you build
             amazing products to your costumers
         </span>
-  
-        <div class="flex gap-4">
-            <a class="btn btn-primary">
-                <i class="fa-solid fa-rocket"></i>
-                Get started
-            </a>
-  
-            <code class="btn btn-ghost border border-neutral">
-                $ npm i app-name
-                <i class="fa-solid fa-copy text-lg text-secondary"></i>
-            </code>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Card -->
+                <div class="flex flex-col max-w-sm">
+                    <!-- Image -->
+                    <div class="bg-[url('/static/images/pawel-czerwinski-Lki74Jj7H-U-unsplash.jpg')] bg-center rounded-t-box h-72"></div>
+
+                    <!-- Status -->
+                    <div class="flex items-center gap-4 bg-neutral text-neutral-content py-4 px-6 font-bold text-lg">
+                        <i class="fa-solid fa-headphones-simple"></i>
+                        Focusing
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex flex-col gap-6 bg-base-200 p-6 rounded-b-box">
+                        <h1 class="font-bold text-xl">
+                            Patterson johnson
+                        </h1>
+
+                        <span>
+            Full Stack maker & UI / UX Designer , love hip hop music Author of Building UI
+        </span>
+
+                        <!-- Icons -->
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-briefcase fa-fw text-accent"></i>
+                                Daisy Components
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-location-dot fa-fw text-accent"></i>
+                                California
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-envelope fa-fw text-accent"></i>
+                                patterson@example.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card -->
+                <div class="flex flex-col max-w-sm">
+                    <!-- Image -->
+                    <div class="bg-[url('/backgrounds/forest.jpg')] bg-center rounded-t-box h-72"></div>
+
+                    <!-- Status -->
+                    <div class="flex items-center gap-4 bg-neutral text-neutral-content py-4 px-6 font-bold text-lg">
+                        <i class="fa-solid fa-headphones-simple"></i>
+                        Focusing
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex flex-col gap-6 bg-base-200 p-6 rounded-b-box">
+                        <h1 class="font-bold text-xl">
+                            Patterson johnson
+                        </h1>
+
+                        <span>
+            Full Stack maker & UI / UX Designer , love hip hop music Author of Building UI
+        </span>
+
+                        <!-- Icons -->
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-briefcase fa-fw text-accent"></i>
+                                Daisy Components
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-location-dot fa-fw text-accent"></i>
+                                California
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-envelope fa-fw text-accent"></i>
+                                patterson@example.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card -->
+                <div class="flex flex-col max-w-sm">
+                    <!-- Image -->
+                    <div class="bg-[url('/backgrounds/forest.jpg')] bg-center rounded-t-box h-72"></div>
+
+                    <!-- Status -->
+                    <div class="flex items-center gap-4 bg-neutral text-neutral-content py-4 px-6 font-bold text-lg">
+                        <i class="fa-solid fa-headphones-simple"></i>
+                        Focusing
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex flex-col gap-6 bg-base-200 p-6 rounded-b-box">
+                        <h1 class="font-bold text-xl">
+                            Patterson johnson
+                        </h1>
+
+                        <span>
+            Full Stack maker & UI / UX Designer , love hip hop music Author of Building UI
+        </span>
+
+                        <!-- Icons -->
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-briefcase fa-fw text-accent"></i>
+                                Daisy Components
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-location-dot fa-fw text-accent"></i>
+                                California
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-envelope fa-fw text-accent"></i>
+                                patterson@example.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card -->
+                <div class="flex flex-col max-w-sm">
+                    <!-- Image -->
+                    <div class="bg-[url('/backgrounds/forest.jpg')] bg-center rounded-t-box h-72"></div>
+
+                    <!-- Status -->
+                    <div class="flex items-center gap-4 bg-neutral text-neutral-content py-4 px-6 font-bold text-lg">
+                        <i class="fa-solid fa-headphones-simple"></i>
+                        Focusing
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex flex-col gap-6 bg-base-200 p-6 rounded-b-box">
+                        <h1 class="font-bold text-xl">
+                            Patterson johnson
+                        </h1>
+
+                        <span>
+            Full Stack maker & UI / UX Designer , love hip hop music Author of Building UI
+        </span>
+
+                        <!-- Icons -->
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-briefcase fa-fw text-accent"></i>
+                                Daisy Components
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-location-dot fa-fw text-accent"></i>
+                                California
+                            </div>
+
+                            <div class="flex gap-3 items-center text-sm">
+                                <i class="fa-solid fa-envelope fa-fw text-accent"></i>
+                                patterson@example.com
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-  
-        <!-- <a class="link link-secondary">
-            Installation guide
-            <i class="fa-solid fa-arrow-right text-sm"></i>
-        </a> -->
     </div>
-  </div>
-      <h1 class="font-medium leading-tight text-5xl mt-0 mb-2 text-blue-600">Todo app</h1>
-      <button class="btn">Button</button>
-      <button class="btn btn-neutral">Neutral</button>
-      <button class="btn btn-primary">Primary</button>
-      <button class="btn btn-secondary">Secondary</button>
-      <button class="btn btn-accent">Accent</button>
-      <button class="btn btn-ghost">Ghost</button>
-      <button class="btn btn-link">Link</button>
+
+    <div class="flex justify-center p-10 mt-10"
+         style="background-image: url(https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp);">
+        <div class="flex flex-col items-center text-center gap-6 max-w-lg">
+            <a class="btn btn-neutral">
+                PRO release - Join waitlist
+                <i class="fa-solid fa-circle-arrow-right text-lg"></i>
+            </a>
+
+            <h1 class="font-bold text-5xl">
+                Let's build
+                <span class="text-primary">Together</span>
+            </h1>
+
+            <span>
+            App Name is an open-source application that leverages your bussiness and help you build
+            amazing products to your costumers
+        </span>
+
+            <div class="flex gap-4">
+                <a class="btn btn-primary">
+                    <i class="fa-solid fa-rocket"></i>
+                    Get started
+                </a>
+
+                <code class="btn btn-ghost border border-neutral">
+                    $ npm i app-name
+                    <i class="fa-solid fa-copy text-lg text-secondary"></i>
+                </code>
+            </div>
+
+            <!-- <a class="link link-secondary">
+                Installation guide
+                <i class="fa-solid fa-arrow-right text-sm"></i>
+            </a> -->
+        </div>
+    </div>
+    <h1 class="font-medium leading-tight text-5xl mt-0 mb-2 text-blue-600">Todo app</h1>
+    <button class="btn">Button</button>
+    <button class="btn btn-neutral">Neutral</button>
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-secondary">Secondary</button>
+    <button class="btn btn-accent">Accent</button>
+    <button class="btn btn-ghost">Ghost</button>
+    <button class="btn btn-link">Link</button>
+
+
 
 {% endblock %}
