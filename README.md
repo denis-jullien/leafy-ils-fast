@@ -27,6 +27,10 @@ Note: use a venv for python installation
     - pip install sqlmodel
 - static analysis
     - pip install ruff
+- unit tests
+    - pip install -U pytest
+    - pip install pytest-cov
+    - to launch tests: `pytest -q *.py --cov=. --cov-report term-missing`
 
 ## Launcher
 
