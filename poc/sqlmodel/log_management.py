@@ -6,7 +6,7 @@ class LogManagement:
     A class used to manage verbosity
     """
 
-    def __init__(self, verbosity: int, logger_name: str) -> None:
+    def __init__(self, verbosity: int | None, logger_name: str) -> None:
         """
         Inititalize the verbosity
 
@@ -22,7 +22,7 @@ class LogManagement:
         None
         """
         # Define application logging
-        if verbosity is None:
+        if verbosity is None or verbosity == 0:
             self._logging_level = logging.CRITICAL
         elif verbosity == 1:
             self._logging_level = logging.WARNING

@@ -37,40 +37,37 @@ class Catalog(str, Enum):
     COUNTY_LIBRARY = "Pierre-Vives"
 
 
-# class Book(SQLModel, table=True):
+class Book(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(index=True)
+    author: str = Field(index=True)
+    synopsis: str
+    edition: str
+    category_type: CategoryType
+    category_age: CategoryAge
+    category_topics: Optional[CategoryTopic] = None
+    langage: Optional[str] = DEFAULT_LANGAGE
+    cover: Optional[str] = None
 
-#     class Category(SQLModel):
-#         type: CategoryType
-#         age: CategoryAge
-#         topic: Optional[list[CategoryTopic]] = None
+    catalog: Catalog = Field(index=True)
+    registration_date: datetime.date
+    last_update_date: datetime.date
 
-#     class BorrowDetails(SQLModel):
-#         available: bool = True
-#         history: list["BorrowHistory"] = Relationship(back_populates="book")
+    available: bool = Field(default=True, index=True)
+    archived: bool = Field(default=False, index=True)
+    history: list["BorrowHistory"] = Relationship(back_populates="book")
 
-#     id: Optional[int] = Field(default=None, primary_key=True)
-#     title: str = Field(index=True)
-#     author: str = Field(index=True)
-#     synopsis: str
-#     edition: str
-#     category: Category = Field(index=True)
-#     catalog: Catalog = Field(index=True)
-#     langage: Optional[str] = DEFAULT_LANGAGE
-#     cover: Optional[str] = None
-#     registration_date: datetime.date
 
-#     borrow_details: BorrowDetails
+class BorrowHistory(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
 
-# class BorrowHistory(SQLModel, table=True):
-#     id: Optional[int] = Field(default=None, primary_key=True)
+    release_date: datetime.date
+    return_date: Optional[datetime.date] = None
 
-#     release_date: datetime.date
-#     return_date: Optional[datetime.date] = None
-
-#     # book_id: int = Field(default=None, foreign_key="book.id")
-#     book: Book = Relationship(back_populates="history")
-#     # member_id: int = Field(default=None, foreign_key="familyMember.id")
-#     member: "FamilyMember" = Relationship(back_populates="borrow_history")
+    book_id: int = Field(default=None, foreign_key="book.id")
+    book: Book = Relationship(back_populates="history")
+    # member_id: int = Field(default=None, foreign_key="familyMember.id")
+    # member: "FamilyMember" = Relationship(back_populates="borrow_history")
 
 
 class Family(SQLModel, table=True):
@@ -79,18 +76,7 @@ class Family(SQLModel, table=True):
     email: Optional[str]
     phone_number: Optional[str]
     last_adhesion_date: datetime.date
-
-    @field_validator("phone_number", "email")
-    @classmethod
-    def check_contact(cls, v: dict, info: ValidationInfo):
-        phone_number = info.data["phone_number"]
-        email = info.data["email"]
-
-        if phone_number is None and email is None:
-            raise ValueError(
-                f"At least on contact details must be set among phone_number '{phone_number}' and email '{email}'."
-            )
-
+    archived: bool = Field(default=False, index=True)
 
 class FamilyMember(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -100,4 +86,5 @@ class FamilyMember(SQLModel, table=True):
     birthdate: Optional[datetime.date]
     family_id: Optional[int] = Field(default=None, foreign_key="family.id")
     family: Optional[Family] = Relationship(back_populates="members")
+    archived: bool = Field(default=False, index=True)
     # borrow_history: list["BorrowHistory"] = Relationship(back_populates="book")

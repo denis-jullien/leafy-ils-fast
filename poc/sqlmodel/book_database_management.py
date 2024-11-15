@@ -6,12 +6,7 @@ from typing import Optional
 
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 from enum import Enum
-from pydantic import (
-    BaseModel,
-    field_validator,
-    ValidationError,
-    ValidationInfo
-)
+from pydantic import BaseModel, field_validator, ValidationError, ValidationInfo
 
 from database_definition import Family, FamilyMember
 from log_management import LogManagement
