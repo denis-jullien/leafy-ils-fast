@@ -1,9 +1,12 @@
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from typing import Annotated
+from fastapi import APIRouter, HTTPException, Request, Response, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 import xml.etree.ElementTree as ET
 from io import StringIO
+
+from pydantic import BaseModel
 from rdflib import Graph, RDF
 from app.books import Book, clean_isbn
 from devtools import pprint, debug
@@ -103,6 +106,31 @@ async def read_user_me():
 async def book_add(request: Request):
     context = {
         "request": request,
+    }
+    return templates.TemplateResponse("book_add.html", context)
+
+@router.post("/add", response_class=HTMLResponse)
+async def book_add( request: Request, book: Book):
+
+    debug(book)
+
+    context = {
+         "request": request,
+    }
+    return templates.TemplateResponse("book_add.html", context)
+
+class IsbnInput(BaseModel):
+    in_isbn: str
+
+
+@router.post("/getinfo", response_class=HTMLResponse)
+async def book_add_post(request: Request, item: IsbnInput):
+
+    debug(item)
+
+    context = {
+        "request": request,
+        "book": await isbn2book(item.in_isbn)
     }
     return templates.TemplateResponse("book_add.html", context)
 

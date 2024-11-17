@@ -10,9 +10,8 @@
         <link href="{{ url_for('static', path='/css/fontawesome.min.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', path='/css/solid.min.css') }}" rel="stylesheet"/>
         <script src="{{ url_for('static', path='/js/htmx.min.js') }}"></script>
+        <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
-
-
 
     {% endblock %}
 </head>
@@ -21,7 +20,7 @@
 <!-- minimun height of full screen-->
 <div class="flex flex-col h-screen justify-between">
 
-    <div id="navbar" class="max-w-7xl mx-auto py-4" >
+    <div id="navbar" class="py-4" >
 
     <div class="flex flex-col">
         <!-- Top navbar (always visible) -->

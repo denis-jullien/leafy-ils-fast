@@ -1,5 +1,5 @@
-from typing import List, Optional
-from pydantic import BaseModel, PositiveInt,FileUrl
+from typing import List, Optional, Union, Literal
+from pydantic import BaseModel, PositiveInt,AnyUrl
 from pydantic_extra_types.language_code import LanguageAlpha2
 
 def clean_isbn(value):
@@ -19,4 +19,4 @@ class Book(BaseModel):
     abstract: str
     language: LanguageAlpha2
     format: str
-    url: Optional[FileUrl] = None
+    url: Union[AnyUrl, Literal[""]] | None = None

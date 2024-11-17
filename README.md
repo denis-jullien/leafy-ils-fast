@@ -56,6 +56,7 @@ https://github.com/rose-pine/daisyui
 https://jowilf.github.io/starlette-admin/user-guide/authentication/
 https://github.com/volfpeter/fasthx
 https://whoosh.readthedocs.io/en/latest/intro.html
+https://www.chromium.org/developers/design-documents/create-amazing-password-forms/
 
 # Other ILS
 
