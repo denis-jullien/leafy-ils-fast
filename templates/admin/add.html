@@ -1,9 +1,28 @@
-{% extends "base2.html" %}
-{% block title %}Index{% endblock %}
-    
+{% extends "layout.html" %}
+{% block head_css %}
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+{% endblock %}
+{% block header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+            <h2 class="page-title">
+                Home
+            </h2>
+        </div>
+    </div>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for(__name__ ~ ':index')}}">Admin</a>
+        </li>
+        <li class="breadcrumb-item active">Home</li>
+    </ol>
+</div>
+{% endblock %}
 {% block content %}
-
-<div class="flex justify-center mt-10">
+<div class="container-fluid">
+    <div class="flex justify-center mt-10">
     <div class="flex flex-col gap-4 p-6 max-w-7xl grow">
 
     {% if book %}
@@ -178,7 +197,5 @@
 
     </div>
 </div>
-
-
-
+</div>
 {% endblock %}
