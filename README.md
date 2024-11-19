@@ -30,7 +30,7 @@ Note: use a venv for python installation
 - unit tests
     - pip install -U pytest
     - pip install pytest-cov
-    - to launch tests: `pytest -q *.py --cov=. --cov-report term-missing`
+    - to launch tests: in poc/sqlmodel `pytest --cov=src --cov-report term-missing --cov-branch`
 
 ## Launcher
 

@@ -9,7 +9,8 @@
             "command": "ruff",
             "args": [
                 "format",
-                "poc"
+                "poc/sqlmodel/src",
+                "poc/sqlmodel/tests",
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -26,7 +27,10 @@
             "command": "ruff",
             "args": [
                 "check",
-                "poc"
+                "poc/sqlmodel/src",
+                "poc/sqlmodel/tests",
+                "--exclude",
+                "__init__.py",
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
