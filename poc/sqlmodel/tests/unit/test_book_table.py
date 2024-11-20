@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import os
 import pytest
 
@@ -32,7 +32,7 @@ def default_setup_teardown():
 
 
 @pytest.mark.parametrize(
-    "title,author,synopsis,edition,catalog,category_type,category_age,category_topics,langage,cover,available,archived",
+    "title,author,synopsis,edition,catalog,category_type,category_age,category_topics,langage,cover,available,archived,registration_date",
     [
         (
             "title",
@@ -47,6 +47,7 @@ def default_setup_teardown():
             None,
             True,
             False,
+            None,
         ),
         (
             "title",
@@ -61,6 +62,7 @@ def default_setup_teardown():
             "cover",
             False,
             True,
+            date.fromisoformat("2019-12-04"),
         ),
     ],
 )
@@ -78,6 +80,7 @@ def test_create_book(
     cover,
     available,
     archived,
+    registration_date,
 ) -> None:
     book_ref: BookTable = default_setup_teardown
     assert book_ref is not None

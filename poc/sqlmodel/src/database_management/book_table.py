@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from sqlmodel import Session, select
 
@@ -38,6 +38,7 @@ class BookTable:
         cover: str = None,
         available: bool = True,
         archived: bool = False,
+        registration_date: date | None = None,
     ) -> Book:
         """Create a new book reference
 
@@ -46,12 +47,17 @@ class BookTable:
         title
         author
         ...
+        registration_date: if None, the release_date will be today
 
         Returns
         ----------
         book reference
         """
-        registration_date = datetime.today()
+        if registration_date is None:
+            registration_date = datetime.today()
+            last_update_date = registration_date
+        else:
+            last_update_date = datetime.today()
         book = Book(
             title=title,
             author=author,
@@ -66,7 +72,7 @@ class BookTable:
             available=available,
             archived=archived,
             registration_date=registration_date,
-            last_update_date=registration_date,
+            last_update_date=last_update_date,
         )
         with Session(self._db_engine) as session:
             session.add(book)

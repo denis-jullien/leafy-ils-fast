@@ -2,7 +2,7 @@ from datetime import datetime, date
 
 from sqlmodel import Session, select
 
-from src.database_management.tables_definition import Book, BorrowHistory
+from src.database_management.tables_definition import Book, FamilyMember, BorrowHistory
 from src.database_management.leafy_database import LeafyDatabase
 from src.tools.log_management import LogManagement
 
@@ -27,6 +27,7 @@ class BorrowHistoryTable:
     def create_borrow_history(
         self,
         book: Book,
+        family_member: FamilyMember,
         release_date: date | None = None,
         return_date: date | None = None,
     ) -> BorrowHistory:
@@ -35,6 +36,7 @@ class BorrowHistoryTable:
         Parameters
         ----------
             book: should have been created through BookTable
+            family_member: should have been created through FamilyMemberTable
             release_date: if None, the release_date will be today
             return_date (optional)
 
@@ -46,6 +48,7 @@ class BorrowHistoryTable:
             release_date = datetime.today()
         history = BorrowHistory(
             book=book,
+            family_member=family_member,
             release_date=release_date,
             return_date=return_date,
         )
@@ -54,12 +57,14 @@ class BorrowHistoryTable:
             session.commit()
             session.refresh(history)
             session.refresh(book)
+            session.refresh(family_member)
         self._log_ref.get_logger().info(f"create borrow history: {history}")
         return history
 
     def get_borrow_history_list(
         self,
         book: Book | None = None,
+        family_member: FamilyMember | None = None,
         release_date: date | None = None,
         return_date: date | None = None,
     ) -> list[BorrowHistory]:
@@ -68,6 +73,7 @@ class BorrowHistoryTable:
         Parameters
         ----------
             book: if not None, search for history by book
+            family_member: if not None, search for history by family_member
             release_date: if not None, search for history by release_date
             return_date: if not None, search for history by return_date
 
@@ -86,6 +92,10 @@ class BorrowHistoryTable:
             ]
             if book is not None:
                 search_mapping.append((book.id, BorrowHistory.book_id))
+            if family_member is not None:
+                search_mapping.append(
+                    (family_member.id, BorrowHistory.family_member_id)
+                )
             statement = self._db.search_table_elements(statement, search_mapping)
 
             results = session.exec(statement)
@@ -96,6 +106,7 @@ class BorrowHistoryTable:
         self,
         history: BorrowHistory,
         book: Book | None = None,
+        family_member: FamilyMember | None = None,
         release_date: date | None = None,
         return_date: date | None = None,
     ) -> BorrowHistory:
@@ -105,6 +116,7 @@ class BorrowHistoryTable:
         ----------
             history: borrow history reference
             book
+            family_member
             release_date
             return_date
 
@@ -114,6 +126,8 @@ class BorrowHistoryTable:
         """
         if book is not None:
             history.book = book
+        if family_member is not None:
+            history.family_member = family_member
         if release_date is not None:
             history.release_date = release_date
         if return_date is not None:
@@ -125,6 +139,8 @@ class BorrowHistoryTable:
             session.refresh(history)
             if book is not None:
                 session.refresh(book)
+            if family_member is not None:
+                session.refresh(family_member)
         self._log_ref.get_logger().info(f"update borrow history: {history}")
         return history
 

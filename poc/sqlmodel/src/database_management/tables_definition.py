@@ -6,6 +6,27 @@ from typing import Optional
 EMPTY_STRING = ""
 
 
+class Family(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    members: list["FamilyMember"] = Relationship(back_populates="family")
+    email: Optional[str]
+    phone_number: Optional[str]
+    last_adhesion_date: date
+    archived: bool = Field(default=False, index=True)
+
+
+class FamilyMember(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    family_referent: bool = False
+    firstname: str
+    surname: str
+    birthdate: Optional[date] = None
+    family_id: Optional[int] = Field(default=None, foreign_key="family.id")
+    family: Optional[Family] = Relationship(back_populates="members")
+    archived: bool = Field(default=False, index=True)
+    borrow_history: list["BorrowHistory"] = Relationship(back_populates="family_member")
+
+
 class Book(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(index=True)
@@ -35,26 +56,5 @@ class BorrowHistory(SQLModel, table=True):
 
     book_id: int = Field(default=None, foreign_key="book.id")
     book: Book = Relationship(back_populates="history")
-    # member_id: int = Field(default=None, foreign_key="familyMember.id")
-    # member: "FamilyMember" = Relationship(back_populates="borrow_history")
-
-
-class Family(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    members: list["FamilyMember"] = Relationship(back_populates="family")
-    email: Optional[str]
-    phone_number: Optional[str]
-    last_adhesion_date: date
-    archived: bool = Field(default=False, index=True)
-
-
-class FamilyMember(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    family_referent: bool = False
-    firstname: str
-    surname: str
-    birthdate: Optional[date] = None
-    family_id: Optional[int] = Field(default=None, foreign_key="family.id")
-    family: Optional[Family] = Relationship(back_populates="members")
-    archived: bool = Field(default=False, index=True)
-    # borrow_history: list["BorrowHistory"] = Relationship(back_populates="book")
+    family_member_id: int = Field(default=None, foreign_key="familymember.id")
+    family_member: FamilyMember = Relationship(back_populates="borrow_history")
