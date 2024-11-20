@@ -98,6 +98,7 @@ def test_create_book(
         cover=cover,
         available=available,
         archived=archived,
+        registration_date=registration_date,
     )
     assert my_book.title == title
     assert my_book.author == author
@@ -109,12 +110,18 @@ def test_create_book(
     assert my_book.category_topics == category_topics
     assert my_book.langage == langage
     assert my_book.cover == cover
-    assert my_book.registration_date.strftime("%Y%m%d") == datetime.today().strftime(
-        "%Y%m%d"
-    )
-    assert my_book.registration_date.strftime(
-        "%Y%m%d%H%M%S%f"
-    ) == my_book.last_update_date.strftime("%Y%m%d%H%M%S%f")
+    if registration_date is None:
+        assert my_book.registration_date.strftime("%Y%m%d") == datetime.today().strftime(
+            "%Y%m%d"
+        )
+        assert my_book.registration_date.strftime(
+            "%Y%m%d%H%M%S%f"
+        ) == my_book.last_update_date.strftime("%Y%m%d%H%M%S%f")
+    else:
+        assert my_book.registration_date.strftime("%Y%m%d") == registration_date.strftime("%Y%m%d")
+        assert my_book.last_update_date.strftime("%Y%m%d") == datetime.today().strftime(
+            "%Y%m%d"
+        )
     assert my_book.available == available
     assert my_book.archived == archived
 
