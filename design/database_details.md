@@ -77,6 +77,9 @@ flowchart LR
     BorrowHistory[(BorrowHistory)]
     FamilyMember[(FamilyMember)]
     Family[(Family)]
+    Portal[(Portal)]
+    Calendar[(Calendar)]
+    Blog[(Blog)]
 
     Book --author--> Author
     Author --book--> Book
@@ -89,12 +92,17 @@ flowchart LR
     FamilyMember --family--> Family
     Family --family_referent--> FamilyMember
     FamilyMember --referent_of_family--> Family
+
+    Portal --highlighting--> Book
 ```
 
 - Book and Author will be used to make the catalog
 - each adhesion is made by Family
 - each Family is composed of at least one FamilyMember as referent
 - Book and Family need to shared a BorrowHistory
+- Portal links the UI Portal view with few books
+- Calendar contains all events and planned activities
+- Blog contains articles' information
 
 ### Python classes
 

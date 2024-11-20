@@ -1,0 +1,45 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Format Python files",
+            "type": "process",
+            "command": "ruff",
+            "args": [
+                "format",
+                "poc/sqlmodel/src",
+                "poc/sqlmodel/tests",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Check Python files",
+            "type": "process",
+            "command": "ruff",
+            "args": [
+                "check",
+                "poc/sqlmodel/src",
+                "poc/sqlmodel/tests",
+                "--exclude",
+                "__init__.py",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
