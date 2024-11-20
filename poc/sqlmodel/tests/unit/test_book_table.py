@@ -111,14 +111,16 @@ def test_create_book(
     assert my_book.langage == langage
     assert my_book.cover == cover
     if registration_date is None:
-        assert my_book.registration_date.strftime("%Y%m%d") == datetime.today().strftime(
+        assert my_book.registration_date.strftime(
             "%Y%m%d"
-        )
+        ) == datetime.today().strftime("%Y%m%d")
         assert my_book.registration_date.strftime(
             "%Y%m%d%H%M%S%f"
         ) == my_book.last_update_date.strftime("%Y%m%d%H%M%S%f")
     else:
-        assert my_book.registration_date.strftime("%Y%m%d") == registration_date.strftime("%Y%m%d")
+        assert my_book.registration_date.strftime(
+            "%Y%m%d"
+        ) == registration_date.strftime("%Y%m%d")
         assert my_book.last_update_date.strftime("%Y%m%d") == datetime.today().strftime(
             "%Y%m%d"
         )
