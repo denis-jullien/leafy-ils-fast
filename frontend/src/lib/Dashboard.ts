@@ -37,7 +37,8 @@ export const dashboard = new DashboardDefinition({
 		}
 	},
 	sideMenu: [
-		new UrlAction('Homepage', '/', Home),
+		new UrlAction('Homepage', '/admin', Home),
+		new UrlAction('Quick Add Books', '/admin/newbook', Book),
 		new UrlAction('Books', '/admin/books/list', Book),
 		new UrlAction('Authors', '/admin/authors/list', User),
 		new CallbackAction('Callback link', null, () => {

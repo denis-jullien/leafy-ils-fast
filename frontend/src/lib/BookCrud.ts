@@ -22,6 +22,7 @@ import {
 import { faker } from '@faker-js/faker';
 
 import Pen from 'carbon-icons-svelte/lib/Pen.svelte';
+import Flash from "carbon-icons-svelte/lib/Flash.svelte";
 import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
 import { type Book, getStorage } from './internal/booksInternal';
@@ -72,7 +73,8 @@ export const bookCrud = new CrudDefinition<Book>({
 						},
 						{ buttonKind: 'ghost' }
 					),
-					new UrlAction('New', '/admin/books/new', Pen)
+					new UrlAction('New', '/admin/books/new', Pen),
+					new UrlAction('Quick Add', '/admin/newbook', Flash,  {buttonKind: 'secondary'})
 				],
 				pagination: {
 					enabled: true,
