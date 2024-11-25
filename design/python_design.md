@@ -5,7 +5,9 @@ At the end the project will have the following architecture:
 ```
 project
 |--- src/
-|--- |--- database_management/
+|--- |--- database_management
+|--- |--- |--- database.py
+|--- |--- |--- models.py
 |--- |--- ...
 |--- tests/
 |--- |--- unit/
@@ -18,9 +20,9 @@ Most of the time, we will have one class per file for simplicity and maintainabi
 
 ### database_management
 
-The database_management folder will contains the python file that will directly manipulate the database and its tables.
+The manipulation of the tables will pass by one class that will manage the database and handle the CRUD operations on all tables. This class is in database file.
 
-The manipulation of the tables will pass by one class for each table manipulation that will handle the CRUD operations.
+The models file will contain all SQLModel classes that type the database's tables.
 
 ## Tests
 
@@ -32,7 +34,22 @@ Tests will be made with **pytest** tool.
 
 ### Unit tests
 
-We expect a 100% coverage for the unit tests.
+We expect a 100% branch coverage for the unit tests.
+
+Plus, we expect at least the following test cases by database's tables by CRUD function:
+
+- create operation:
+    - only mandatory parameters
+    - all parameters
+- read operation:
+    - one test for normal type (str, int, bool)
+    - if present: one test for date type
+- update operation:
+    - one parameter updated
+    - all parameters updated
+    - no parameter updated
+- delete operation:
+    - one test case
 
 ### Integration tests
 
