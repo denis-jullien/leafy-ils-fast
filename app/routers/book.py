@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, HTTPException, Request, Response, Form
+from fastapi import APIRouter, HTTPException, Request, Response, Form, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -25,8 +25,17 @@ templates = Jinja2Templates(directory='./templates')
 # 9782070438617
 # 9780738531366
 @router.get("/notice")
-async def hello_func(in_isbn: str):
+async def hello_func(in_isbn: str, response: Response):
     boo = await isbn2book(in_isbn)
+    if boo is None:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+    return boo
+
+@router.post("/notice")
+async def hello_func_post(in_isbn: str):
+    boo = await isbn2book(in_isbn)
+    if boo is None:
+        raise HTTPException(status_code=400, detail="Item not found")
     return boo
 
 @router.get("/")

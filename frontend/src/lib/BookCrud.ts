@@ -16,7 +16,7 @@ import {
 	TextFilter,
 	type RequestParameters,
 	UrlAction,
-	View
+	View, NumberField
 } from '@orbitale/svelte-admin';
 
 import { faker } from '@faker-js/faker';
@@ -33,7 +33,8 @@ const fields = [
 		placeholder: "Enter the book's descrption",
 		help: "Please don't make a summary of the book, remember to not spoil your readers!"
 	}),
-	new DateField('publishedAt', 'Published at', { sortable: true })
+	new DateField('publishedAt', 'Published at', { sortable: true }),
+	new NumberField('numberOfPages', 'Number field')
 ];
 
 const IdField = new TextField('id', 'ID');
@@ -52,7 +53,7 @@ function randomWait(maxMilliseconds: number) {
 export const bookCrud = new CrudDefinition<Book>({
 	name: 'books',
 	label: { singular: 'Book', plural: 'Books' },
-	minStateLoadingTimeMs: 400,
+	//minStateLoadingTimeMs: 400,
 
 	operations: [
 		new List(
@@ -73,8 +74,9 @@ export const bookCrud = new CrudDefinition<Book>({
 						},
 						{ buttonKind: 'ghost' }
 					),
+					new UrlAction('Quick Add', '/admin/newbook', Flash,  {buttonKind: 'danger-tertiary'}),
 					new UrlAction('New', '/admin/books/new', Pen),
-					new UrlAction('Quick Add', '/admin/newbook', Flash,  {buttonKind: 'secondary'})
+
 				],
 				pagination: {
 					enabled: true,
@@ -138,6 +140,11 @@ export const bookCrud = new CrudDefinition<Book>({
 			}
 
 			let entities = getStorage().all();
+
+
+
+
+
 			const filters = requestParameters.filters;
 			if (filters) {
 				entities = entities.filter((entity) => {
@@ -193,7 +200,7 @@ export const bookCrud = new CrudDefinition<Book>({
 
 			const listEntities = entities.slice(itemsPerPage * (page - 1), itemsPerPage * page);
 
-			await randomWait(500);
+			//await randomWait(500);
 
 			return new PaginatedResults(
 				page,

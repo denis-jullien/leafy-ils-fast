@@ -130,6 +130,9 @@ export const authorCrud = new CrudDefinition<Author>({
 			}
 
 			let entities = getStorage().all();
+
+			console.info('Authors', entities);
+
 			const filters = requestParameters.filters;
 			if (filters) {
 				entities = entities.filter((entity) => {
@@ -152,6 +155,8 @@ export const authorCrud = new CrudDefinition<Author>({
 					return true;
 				});
 			}
+
+			console.info('Authors2', entities);
 
 			const listEntities = entities.slice(itemsPerPage * (page - 1), itemsPerPage * page);
 

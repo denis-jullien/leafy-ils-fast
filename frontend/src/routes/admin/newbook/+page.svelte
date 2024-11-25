@@ -23,6 +23,23 @@
 	import fr from '$lib/translations/fr';
 
 	initLocale('fr', { fr });
+
+	let isbn = ''
+	let bar = 'qux'
+	let result = null
+
+	async function doPost () {
+		const res = await fetch('http://127.0.0.1:8000/book/notice?in_isbn='+isbn, {
+			method: 'POST',
+			body: JSON.stringify({
+				isbn: isbn,
+			})
+		})
+
+		const json = await res.json()
+		isbn = ''
+		result = JSON.stringify(json)
+	}
 </script>
 
 <svelte:component this={dashboard.theme.dashboard} {dashboard}>
@@ -34,7 +51,7 @@
 		Plopopd
 	</p>
 
-	<Form on:submit>
+	<Form on:submit={doPost}>
 <!--		<FormGroup legendText="Checkboxes">-->
 <!--			<Checkbox id="checkbox-0" labelText="Checkbox Label" checked />-->
 <!--			<Checkbox id="checkbox-1" labelText="Checkbox Label" />-->
@@ -74,10 +91,16 @@
 <!--			</Select>-->
 <!--		</FormGroup>-->
 		<FormGroup>
-			<TextInput labelText="User name" placeholder="Enter user name..." required autofocus/>
+			<TextInput bind:value={isbn} labelText="User name" placeholder="Enter user name..." required autofocus/>
 		</FormGroup>
 		<Button type="submit">Submit</Button>
 	</Form>
+		<p>
+			Result:
+		</p>
+		<pre>
+		{result}
+		</pre>
 	</Tile>
 </svelte:component>
 

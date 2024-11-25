@@ -12,6 +12,7 @@ from app.users import auth_backend, auth_cookie_backend, current_active_user, fa
 from app.admin import admin
 from app.routers import book
 
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
@@ -21,7 +22,23 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)  
+app = FastAPI(lifespan=lifespan)
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -68,7 +85,7 @@ def booklist():
             abstract='',
             language='fr',
             format='1 vol. (non paginé [30] p.) : ill. en coul., couv. ill. en coul. ; 18 cm',
-            url=None
+            url=""
         ),
         Book(
             title='La végétarienne',
@@ -79,7 +96,7 @@ def booklist():
             abstract='',
             language='fr',
             format='1 volume (211 pages) : couverture illustrée ; 18 cm',
-            url=None,
+            url="",
         ) ,
         Book(
             title='Moi, François le Français',
@@ -97,7 +114,7 @@ def booklist():
             ),
             language='fr',
             format='1 vol. (186 p.) ; 23 cm',
-            url=None,
+            url="",
         ) ,
         Book(
             title="Le dernier restaurant avant la fin du monde",
@@ -116,25 +133,7 @@ def booklist():
             ),
             language='fr',
             format='1 vol. (279 p.) : couv. ill. en coul. ; 18 cm',
-            url=None,
-        ),
-        Book(
-            title='Moi, François le Français',
-            author='Georges Piombo',
-            publisher='Paris : Éditions Libre & Solidaire , 2022',
-            isbn13=9782377940820,
-            publication_year=2022,
-            abstract=(
-                "La vie est une aventure. Ma mère et mon père, une histoire d'amour au-dessus de tout. Il l'a enlevée, ils"
-                " ont fait la « carrossela », sont partis sans se retourner, ont quitté le pays, la famiglia. Quand l'amou"
-                "r est le plus fort, l'enfant paraît. L'enfant c'est moi, François le Français. Je veux être le meilleur F"
-                "rançais possible, servir mon pays, m'émanciper ailleurs. D'autant plus qu'elle ne m'aime plus, ses soleil"
-                "s ne brillent plus pour moi. Je m'en vais traverser la guerre, le siècle. Je veux devenir riche ; riche d"
-                "e quoi ? La vie est une aventure, rencontrer l'autre est une jouissance."
-            ),
-            language='fr',
-            format='1 vol. (186 p.) ; 23 cm',
-            url=None,
+            url="",
         )
     ]
 
@@ -148,6 +147,12 @@ async def home(request: Request):
         "carousell_books" : booklist(),
     }
     return templates.TemplateResponse("index.html", context)
+
+@app.get("/books")
+async def books(request: Request):
+
+
+    return booklist()+ booklist()+ booklist()
 
  
 @app.get("/hello")  

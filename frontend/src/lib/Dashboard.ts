@@ -12,6 +12,7 @@ import fr from './translations/fr';
 import { bookCrud } from './BookCrud';
 import { authorCrud } from './AuthorCrud';
 import { testCrud } from './TestCrud';
+import { bookCrud2 } from './Book2Crud';
 //import { ThemeChangerAction } from '@orbitale/svelte-admin/themes/svelte';
 
 let newLinkIndex = 1;
@@ -47,7 +48,8 @@ export const dashboard = new DashboardDefinition({
 		new Submenu('Submenu', null, [
 			new UrlAction('Submenu 1', '#', Book),
 			new UrlAction('Submenu 2', '#', Book)
-		])
+		]),
+		new UrlAction('Books2', '/admin/books2/list', Book),
 	],
 	topLeftMenu: [
 		//new ThemeChangerAction(),
@@ -68,5 +70,5 @@ export const dashboard = new DashboardDefinition({
 	localeDictionaries: {
 		fr: fr
 	},
-	cruds: [bookCrud, authorCrud, testCrud]
+	cruds: [bookCrud, authorCrud, testCrud, bookCrud2]
 });
