@@ -2,6 +2,15 @@
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
+https://github.com/phillipdupuis/pydantic-to-typescript
+```bash
+pip install 'pydantic-to-typescript>=2'
+pip install pydantic-extra-types
+npm i json-schema-to-typescript
+
+pydantic2ts --module ./app/books.py --output ./frontend/src/lib/apiTypes.ts
+```
+
 ## Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!

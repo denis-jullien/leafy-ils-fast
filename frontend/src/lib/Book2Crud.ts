@@ -26,20 +26,23 @@ import Pen from 'carbon-icons-svelte/lib/Pen.svelte';
 import Flash from "carbon-icons-svelte/lib/Flash.svelte";
 import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
-import type { Book } from '$lib/internal/booksInternal';
+import type { Book } from '$lib/apiTypes';
 
-export type Book2 = {
+// export type Book2 = {
+// 	id: number | string;
+// 	title: string;
+// 	author: string;
+// 	publisher: string;
+// 	isbn13: number;
+// 	publication_year: number | string;
+// 	abstract: string;
+// 	language: string;
+// 	format: string;
+// 	url: string;
+// };
+export type Book2 = Book & {
 	id: number | string;
-	title: string;
-	author: string;
-	publisher: string;
-	isbn13: number;
-	publication_year: number | string;
-	abstract: string;
-	language: string;
-	format: string;
-	url: string;
-};
+}
 
 const fields = [
 	new TextField('title', 'Title', { placeholder: "Enter the book's title", sortable: true }),
