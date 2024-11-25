@@ -9,5 +9,8 @@ export default defineConfig({
 			project: './project.inlang',
 			outdir: './src/lib/paraglide'
 		})
-	]
+	],
+	ssr: {
+		noExternal: process.env.NODE_ENV === 'production' ? ['@carbon/charts'] : []
+	}
 });

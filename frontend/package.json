@@ -12,6 +12,7 @@
 		"lint": "prettier --check ."
 	},
 	"devDependencies": {
+		"@carbon/charts-svelte": "^1.22.4",
 		"@faker-js/faker": "^9.2.0",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.0.0",
