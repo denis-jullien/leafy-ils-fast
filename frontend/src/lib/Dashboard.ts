@@ -53,20 +53,21 @@ export const dashboard = new DashboardDefinition({
 	],
 	topLeftMenu: [
 		//new ThemeChangerAction(),
-		new UrlAction('API Docs', '/apidocs', Document, { htmlAttributes: { rel: 'external' } })
+		new UrlAction('Preter', '/pret', Book),
+		new UrlAction('Returns', '/retrun', Document),
 	],
-	topRightMenu: [
-		new UrlAction('Single menu link', '/'),
-		new CallbackAction('Single menu callback', null, () => {
-			alert('Hey, this link is called with Javascript too!');
-		}),
-
-		new Submenu('Specific submenu', Menu, [
-			new UrlAction('Submenu item 1', '/', Book),
-			new UrlAction('Submenu item 2', '/', Book)
-		]),
-		dynamicallyCustomizable
-	],
+	// topRightMenu: [
+	// 	new UrlAction('Single menu link', '/', Book),
+	// 	new CallbackAction('Single menu callback', null, () => {
+	// 		alert('Hey, this link is called with Javascript too!');
+	// 	}),
+	//
+	// 	new Submenu('Specific submenu', Menu, [
+	// 		new UrlAction('Submenu item 1', '/', Book),
+	// 		new UrlAction('Submenu item 2', '/', Book)
+	// 	]),
+	// 	dynamicallyCustomizable
+	// ],
 	localeDictionaries: {
 		fr: fr
 	},

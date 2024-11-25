@@ -109,7 +109,7 @@ function truncate(str: string, n: number, useWordBoundary: boolean = true) {
 export const bookCrud2 = new CrudDefinition<Book2>({
 	name: 'books2',
 	label: { singular: 'Book', plural: 'Books' },
-	// minStateLoadingTimeMs: 400,
+	 minStateLoadingTimeMs: 100,
 
 	operations: [
 		new List(

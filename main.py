@@ -152,7 +152,7 @@ async def home(request: Request):
 async def books(request: Request):
 
 
-    return booklist()+ booklist()+ booklist()
+    return booklist()
 
  
 @app.get("/hello")  

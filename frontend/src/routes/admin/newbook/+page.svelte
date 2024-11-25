@@ -3,30 +3,32 @@
 	import LogoGithub from 'carbon-icons-svelte/lib/LogoGithub.svelte';
 	import { _ } from 'svelte-i18n';
 
+	import { writable } from 'svelte/store';
+
 	import { Tile } from "carbon-components-svelte";
+	import { DataTable , Link } from "carbon-components-svelte";
+	import Launch from "carbon-icons-svelte/lib/Launch.svelte";
+
+	import type { Book2 } from '$lib/Book2Crud';
 
 	import {
 		Form,
 		FormGroup,
-		Checkbox,
-		RadioButtonGroup,
-		RadioButton,
-		Select,
-		SelectItem,
 		TextInput,
 		Button,
 	} from "carbon-components-svelte";
 
-
 	import { initLocale } from '@orbitale/svelte-admin';
 	import { dashboard } from '$lib/Dashboard';
 	import fr from '$lib/translations/fr';
+	import Pen from 'carbon-icons-svelte/lib/Pen.svelte';
+	import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
 	initLocale('fr', { fr });
 
 	let isbn = ''
 	let bar = 'qux'
-	let result = null
+	let result: Array<Book2> = []
 
 	async function doPost () {
 		const res = await fetch('http://127.0.0.1:8000/book/notice?in_isbn='+isbn, {
@@ -36,9 +38,17 @@
 			})
 		})
 
-		const json = await res.json()
+		const json = <Book2>await res.json()
+		json.id = Math.random().toString(36).substr(2, 10)
+		console.log(json)
 		isbn = ''
-		result = JSON.stringify(json)
+		result = [json,...result]
+
+
+	}
+
+	function handleClick() {
+		result = result.slice(1);
 	}
 </script>
 
@@ -95,12 +105,46 @@
 		</FormGroup>
 		<Button type="submit">Submit</Button>
 	</Form>
-		<p>
-			Result:
-		</p>
-		<pre>
-		{result}
-		</pre>
 	</Tile>
+
+	{#if result.length > 0}
+	<DataTable
+		headers={[
+    { key: "name", value: "Name" },
+    { key: "author", value: "Author" },
+    { key: "publisher", value: "Publisher" },
+    { key: "rule", value: "" },
+  ]}
+		rows={ result.map((book) => ({
+      id: book.id,
+      name: book.title,
+      author: book.author,
+      publisher: book.publisher,
+      rule: book.id,
+    }))
+    }
+	>
+		<strong slot="title">Results</strong>
+		<span slot="description" style="font-size: 1rem">
+    Historique des résultats
+  </span>
+		<svelte:fragment slot="cell" let:row let:cell>
+			{#if cell.key === "rule"}
+				<Link
+					icon={Pen}
+					href="/admin/books/edit?id={cell.value}"
+					>Edit</Link
+				>
+				<Link
+					icon={TrashCan}
+					href="/admin/books/delete?id={cell.value}"
+				>Delete</Link
+				>
+			{:else}
+				{cell.value}
+			{/if}
+		</svelte:fragment>
+	</DataTable>
+	{/if}
 </svelte:component>
 
