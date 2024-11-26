@@ -1,0 +1,184 @@
+{% extends "base2.html" %}
+{% block title %}Index{% endblock %}
+    
+{% block content %}
+
+<div class="flex justify-center mt-10">
+    <div class="flex flex-col gap-4 p-6 max-w-7xl grow">
+
+    {% if book %}
+        <div role="alert" class="alert alert-success">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>
+              Book found!
+
+          </span>
+        </div>
+        <audio autoplay>
+          <source src="{{ url_for('static', path='/sounds/COMCell_Message 1 (ID 1111)_BSB.ogg') }}" type="audio/ogg">
+        </audio>
+    {% endif %}
+
+    {% if not book %}
+
+        <div role="alert" class="alert alert-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Error! Task failed successfully.</span>
+        </div>
+        <audio autoplay>
+          <source src="{{ url_for('static', path='/sounds/ROBTVox_Notification lasomarie 3 (ID 2061)_BSB.ogg') }}" type="audio/ogg">
+        </audio>
+    {% endif %}
+
+
+        <div class="flex w-full flex-col lg:flex-row">
+            <div class="card bg-base-200 rounded-box p-6 min-w-96">
+                <h1 class="text-3xl font-bold self-center">Scan book</h1>
+                                <span class="self-center">
+                    Scan a book !
+
+                </span>
+                <form class="flex flex-col gap-4">
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text">ISBN</span>
+                        </div>
+
+                        <input class="input input-bordered" name="in_isbn" value="" autofocus/>
+                    </label>
+                    <button id="button-login" class="btn btn-primary" hx-post="/book/getinfo" hx-target="body" hx-ext="json-enc"  hx-indicator="#spinner">get info</button>
+                </form>
+
+                <span id="spinner" class="mt-6 htmx-indicator self-center loading loading-spinner loading-lg"></span>
+
+
+            </div>
+            <div class="divider lg:divider-horizontal">OR</div>
+            <div class="card bg-base-200 rounded-box flex-grow p-6">
+                 <h1 class="text-3xl font-bold self-center">Manual edit</h1>
+
+                <span class="self-center">
+                    Don't have an account?
+                    <a class="link link-secondary">Register</a>
+                </span>
+
+
+
+                <form class="flex flex-col gap-4">
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text">Title</span>
+                        </div>
+
+                        <input class="input input-bordered" name="title" value="{{  (book and book.title)|default('my_variable is not defined') }}" required />
+                    </label>
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text">Author</span>
+                        </div>
+
+                        <input class="input input-bordered" name="author" value="{{ (book and book.author) or '' }}" required/>
+                    </label>
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text">Publisher</span>
+                        </div>
+
+                        <input class="input input-bordered" name="publisher" value="{{ (book and book.publisher) or '' }}" required/>
+                    </label>
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text" minlength="10" maxlength="17">ISBN</span>
+                        </div>
+
+                        <input class="input input-bordered" name="isbn13" value="{{ book and book.isbn13 or '' }}" required/>
+                    </label>
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text" minlength="10" maxlength="17">publication_year</span>
+                        </div>
+
+                        <input class="input input-bordered" name="publication_year" value="{{ book and book.publication_year or '' }}" required/>
+                    </label>
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text" minlength="10" maxlength="17">abstract</span>
+                        </div>
+
+                        <textarea class="textarea textarea-bordered" name="abstract" required>{{ book and book.abstract or '' }}</textarea>
+                    </label>
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text" minlength="10" maxlength="17">language</span>
+                        </div>
+
+                        <input class="input input-bordered" name="language" value="{{ book and book.language or '' }}" required/>
+                    </label>
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text" minlength="10" maxlength="17">format</span>
+                        </div>
+
+                        <input class="input input-bordered" name="format" value="{{ book and book.format or '' }}" required/>
+                    </label>
+
+
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text" minlength="10" maxlength="17">url</span>
+                        </div>
+
+                        <input class="input input-bordered" name="url" value="{{ book and book.url or '' }}" required/>
+                    </label>
+
+{#                    <div class="form-control">#}
+{#                        <label class="cursor-pointer label self-start gap-2">#}
+{#                            <input type="checkbox" class="checkbox" />#}
+{#                            <span class="label-text">Active</span>#}
+{#                        </label>#}
+{#                    </div>#}
+
+                    <button id="button-login" class="btn btn-primary"
+                            hx-post="/book/add"
+                            hx-target="body"
+                            hx-ext="json-enc"
+                    >Log in</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

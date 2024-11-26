@@ -25,6 +25,7 @@ admin = Admin(
   )
 
 # Add view
+admin.add_view(CustomView(label="Quick add books", icon="fa fa-plus", path="/add", template_path="add.html"))
 admin.add_view(ModelView(Post, label="Blog Posts", icon="fa fa-blog"))
 admin.add_view(ModelView(User, icon="fa fa-users"))
 admin.add_view(Link(label="Go Back to Home", icon="fa fa-link", url="/"))

@@ -1,14 +1,19 @@
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+import logging
 
+from app.books import Book
 from app.db import User, create_db_and_tables
 from app.schemas import UserCreate, UserRead, UserUpdate
 from app.users import auth_backend, auth_cookie_backend, current_active_user, fastapi_users
 from app.admin import admin
+from app.routers import book
 
-import httpx
+from fastapi.middleware.cors import CORSMiddleware
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,9 +22,27 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)  
+app = FastAPI(lifespan=lifespan)
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+app.include_router(book.router)
 
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -51,65 +74,6 @@ app.include_router(
 from fastapi.templating import Jinja2Templates
 templates = Jinja2Templates(directory="templates")
 
-
-async def isbn2book(in_isbn: str):
-    async with httpx.AsyncClient() as client:
-
-        isbn = clean_isbn(in_isbn)  # "978-2013944762"
-        r = await client.get(f'https://www.sudoc.fr/services/isbn2ppn/{isbn}')
-        # print(r.text)
-
-        root = ET.fromstring(r.text)
-        # print(root.tag)
-
-        if root.find('error') != None:
-            print("return isbn2ppn Error !")
-
-        x = root.find('query/resultNoHolding')
-        if x == None:
-            x = root.find('query/result')
-
-        ppn = x.find('ppn').text
-        print(f"Got PPN: {ppn}")
-
-        r = await client.get(f'https://www.sudoc.fr/{ppn}.rdf')
-        # print(r.text)
-
-        # Create a Graph
-        g = Graph()
-
-        # Parse in an RDF file hosted on the Internet
-        g.parse(StringIO(r.text), format='application/rdf+xml')
-
-        knows_query3 = """
-        select ?book ?title ?abstract ?date ?publisher ?format where {
-            ?book a bibo:Book . 
-            ?book dc:title ?title .
-            OPTIONAL { ?book dcterms:abstract ?abstract }
-            ?book dc:date ?date .
-            ?book dc:publisher ?publisher .
-            ?book dc:format ?format .
-        }"""
-
-        qres = g.query(knows_query3)
-        for row in qres:
-            debug(row)
-            print(f"{row.book} knows {row.title}")
-
-            book = Book(title=row.title,
-                        abstract=row.abstract or "",
-                        publication_year=row.date,
-                        publisher=row.publisher,
-                        author=row.title,
-                        format=row.format,
-                        language='fr',
-                        isbn13=isbn,
-                        )
-
-        debug(book)
-
-    return book
-
 def booklist():
     return [
         Book(
@@ -121,7 +85,7 @@ def booklist():
             abstract='',
             language='fr',
             format='1 vol. (non paginé [30] p.) : ill. en coul., couv. ill. en coul. ; 18 cm',
-            url=None
+            url=""
         ),
         Book(
             title='La végétarienne',
@@ -132,7 +96,7 @@ def booklist():
             abstract='',
             language='fr',
             format='1 volume (211 pages) : couverture illustrée ; 18 cm',
-            url=None,
+            url="",
         ) ,
         Book(
             title='Moi, François le Français',
@@ -150,7 +114,7 @@ def booklist():
             ),
             language='fr',
             format='1 vol. (186 p.) ; 23 cm',
-            url=None,
+            url="",
         ) ,
         Book(
             title="Le dernier restaurant avant la fin du monde",
@@ -169,27 +133,12 @@ def booklist():
             ),
             language='fr',
             format='1 vol. (279 p.) : couv. ill. en coul. ; 18 cm',
-            url=None,
-        ),
-        Book(
-            title='Moi, François le Français',
-            author='Georges Piombo',
-            publisher='Paris : Éditions Libre & Solidaire , 2022',
-            isbn13=9782377940820,
-            publication_year=2022,
-            abstract=(
-                "La vie est une aventure. Ma mère et mon père, une histoire d'amour au-dessus de tout. Il l'a enlevée, ils"
-                " ont fait la « carrossela », sont partis sans se retourner, ont quitté le pays, la famiglia. Quand l'amou"
-                "r est le plus fort, l'enfant paraît. L'enfant c'est moi, François le Français. Je veux être le meilleur F"
-                "rançais possible, servir mon pays, m'émanciper ailleurs. D'autant plus qu'elle ne m'aime plus, ses soleil"
-                "s ne brillent plus pour moi. Je m'en vais traverser la guerre, le siècle. Je veux devenir riche ; riche d"
-                "e quoi ? La vie est une aventure, rencontrer l'autre est une jouissance."
-            ),
-            language='fr',
-            format='1 vol. (186 p.) ; 23 cm',
-            url=None,
+            url="",
         )
     ]
+
+
+
 @app.get("/")
 async def home(request: Request):
 
@@ -198,6 +147,12 @@ async def home(request: Request):
         "carousell_books" : booklist(),
     }
     return templates.TemplateResponse("index.html", context)
+
+@app.get("/books")
+async def books(request: Request):
+
+
+    return booklist()
 
  
 @app.get("/hello")  
@@ -224,22 +179,13 @@ def index(request: Request, user: User = Depends(current_active_user)):
 async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello {user.email}!"}
 
-import xml.etree.ElementTree as ET
-from io import StringIO  
-from rdflib import Graph, RDF
-from app.books import Book, clean_isbn
-from devtools import pprint, debug
 
-
-# Example isbn
-# 978-2013944762
-# 9782253067900 
-# 9782377940820
-# 9782070438617
-@app.get("/notice")  
-async def hello_func(in_isbn: str):
-        
-    return isbn2book(in_isbn)
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+	exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+	logging.error(f"{request}: {exc_str}")
+	content = {'status_code': 10422, 'message': exc_str, 'data': None}
+	return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 # Mount admin to your app
 admin.mount_to(app)
