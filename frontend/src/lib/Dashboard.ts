@@ -53,8 +53,8 @@ export const dashboard = new DashboardDefinition({
 	],
 	topLeftMenu: [
 		//new ThemeChangerAction(),
-		new UrlAction('Preter', '/pret', Book),
-		new UrlAction('Returns', '/retrun', Document),
+		// new UrlAction('Preter', '/pret', Book),
+		// new UrlAction('Returns', '/retrun', Document),
 	],
 	// topRightMenu: [
 	// 	new UrlAction('Single menu link', '/', Book),

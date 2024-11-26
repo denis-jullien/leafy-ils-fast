@@ -16,7 +16,10 @@
 		FormGroup,
 		TextInput,
 		Button,
+
 	} from "carbon-components-svelte";
+
+	import { InlineNotification } from "carbon-components-svelte";
 
 	import { initLocale } from '@orbitale/svelte-admin';
 	import { dashboard } from '$lib/Dashboard';
@@ -129,7 +132,16 @@
     Historique des résultats
   </span>
 		<svelte:fragment slot="cell" let:row let:cell>
-			{#if cell.key === "rule"}
+			{#if cell.key === "rule" }
+				{#if row.name === undefined}
+					<InlineNotification
+						hideCloseButton
+						lowContrast
+						kind="error"
+						title="Error:"
+						subtitle="Item not found."
+					/>
+				{:else}
 				<Link
 					icon={Pen}
 					href="/admin/books/edit?id={cell.value}"
@@ -140,6 +152,7 @@
 					href="/admin/books/delete?id={cell.value}"
 				>Delete</Link
 				>
+					{/if}
 			{:else}
 				{cell.value}
 			{/if}
