@@ -9,7 +9,7 @@ from app.books import Book
 from app.db import User, create_db_and_tables
 from app.schemas import UserCreate, UserRead, UserUpdate
 from app.users import auth_backend, auth_cookie_backend, current_active_user, fastapi_users
-from app.admin import admin
+# from app.admin import admin
 from app.routers import book
 
 from fastapi.middleware.cors import CORSMiddleware
