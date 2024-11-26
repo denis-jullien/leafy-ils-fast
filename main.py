@@ -29,7 +29,7 @@ origins = [
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:8080",
-    "http://localhost:5173"
+    "*"
 ]
 
 app.add_middleware(
@@ -139,18 +139,17 @@ def booklist():
 
 
 
-@app.get("/")
-async def home(request: Request):
-
-    context = {
-        "request": request,
-        "carousell_books" : booklist(),
-    }
-    return templates.TemplateResponse("index.html", context)
+# @app.get("/")
+# async def home(request: Request):
+#
+#     context = {
+#         "request": request,
+#         "carousell_books" : booklist(),
+#     }
+#     return templates.TemplateResponse("index.html", context)
 
 @app.get("/books")
 async def books(request: Request):
-
 
     return booklist()
 
@@ -188,10 +187,14 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 	return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 # Mount admin to your app
-admin.mount_to(app)
+# admin.mount_to(app)
+
+app.mount("/", StaticFiles(directory="frontend/build",  html=True), name="sveltekit")
+
 
 if __name__ == "__main__":
     import uvicorn
 
     # uvicorn.run(app, host="0.0.0.0", port=80)
-    uvicorn.run('main:app', host="0.0.0.0", port=8000, reload=True)
+    # uvicorn.run('main:app', host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run('main:app', host="0.0.0.0", port=8000)

@@ -18,7 +18,8 @@ class Post(Base):
 
 # Create admin
 admin = Admin(
-    engine, 
+    engine,
+    base_url="/admin2",
     title="Leafy ILS Admin", 
     templates_dir="templates/admin",
     index_view=HomeView(label="Home", icon="fa fa-home"),
