@@ -172,8 +172,7 @@ class TableManagement:
         return member_list
 
     def get_data(self, id: int, cls) -> TableType:
-        """Get an element in a table from the database with its id
-        """
+        """Get an element in a table from the database with its id"""
         with Session(self._db_engine) as session:
             element = session.get(cls, id)
         return element

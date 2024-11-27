@@ -2,6 +2,7 @@ from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional
 
+
 EMPTY_STRING = ""
 
 # Shared models
@@ -39,9 +40,7 @@ class AuthorBase(SharedBase):
 
 class AuthorTable(AuthorBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    books: list["AuthorBookTableLink"] = Relationship(
-        back_populates="author"
-    )
+    books: list["AuthorBookTableLink"] = Relationship(back_populates="author")
 
 
 class AuthorPublic(AuthorBase):
@@ -85,9 +84,7 @@ class BookBase(SharedBase):
 
 class BookTable(BookBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    authors: list[AuthorBookTableLink] = Relationship(
-        back_populates="book"
-    )
+    authors: list[AuthorBookTableLink] = Relationship(back_populates="book")
 
 
 class BookPublic(BookBase):

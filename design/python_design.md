@@ -36,7 +36,7 @@ Tests will be made with **pytest** tool.
 
 We expect a 100% branch coverage for the unit tests.
 
-Plus, we expect at least the following test cases by database's tables by CRUD function:
+Plus, we expect at least the following test cases by CRUD APIs:
 
 - create operation:
     - only mandatory parameters
