@@ -89,3 +89,12 @@ https://unsplash.com/fr/photos/art-abstrait-rose-et-vert-ruJm3dBXCqw
 ## Parsing
 https://github.com/gwu-libraries/launchpad/blob/8901f91e3dc458baf97a09f0da8dc51218387c8e/lp/ui/apis.py#L57
 https://github.com/safwansamsudeen/infilib/blob/main/src/lib/helpers.js#L270
+
+## Scearch engine 
+
+https://lab.abilian.com/Tech/Search/Comparison%20of%20open%20source%20search%20engines/
+https://supabase.com/blog/postgres-full-text-search-vs-the-rest
+https://github.com/quickwit-oss/tantivy as a library !
+https://github.com/typesense/typesense
+https://github.com/valeriansaliou/sonic
+https://github.com/sqlalchemy/sqlalchemy/discussions/9466

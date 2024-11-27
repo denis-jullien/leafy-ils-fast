@@ -14,7 +14,7 @@ COPY ./frontend/ /app/frontend/
 RUN npm run build
 
 
-FROM python:3.13-bookworm AS builder
+FROM python:3.13.0-alpine3.20 AS builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
@@ -27,9 +27,22 @@ COPY ./pyproject.toml poetry.lock ./
 
 RUN poetry install
 
-FROM python:3.13-slim-bookworm
+FROM python:3.13.0-alpine3.20
 
 WORKDIR /app
+
+
+
+
+COPY --from=flyio/litefs:0.5 /usr/local/bin/litefs /usr/local/bin/litefs
+# Copy the possible LiteFS configurations.
+ADD fly-io-config/etc/litefs.yml /etc/litefs.yml
+
+# Setup our environment to include FUSE & SQLite. We install ca-certificates
+# so we can communicate with the Consul server over HTTPS. cURL is added so
+# we can call our HTTP endpoints for debugging.
+RUN apk add bash fuse3 sqlite ca-certificates curl
+#RUN apk add ca-certificates fuse3 sqlite
 
 COPY --from=frontend-builder /app/frontend/build/ frontend/build/
 
@@ -39,4 +52,5 @@ COPY .. .
 
 EXPOSE 8000
 
-CMD ["/app/.venv/bin/fastapi", "run"]
+#CMD ["/app/.venv/bin/fastapi", "run"]
+ENTRYPOINT litefs mount
