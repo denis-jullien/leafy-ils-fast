@@ -58,3 +58,9 @@ class BorrowHistory(SQLModel, table=True):
     book: Book = Relationship(back_populates="history")
     family_member_id: int = Field(default=None, foreign_key="familymember.id")
     family_member: FamilyMember = Relationship(back_populates="borrow_history")
+
+
+class Author(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    description: Optional[str] = EMPTY_STRING
