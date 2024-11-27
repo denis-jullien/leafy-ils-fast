@@ -27,11 +27,23 @@
 	import Pen from 'carbon-icons-svelte/lib/Pen.svelte';
 	import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
+	import QrCodeScanner from '$lib/QrCodeScanner.svelte';
+	import { Grid, Row, Column } from "carbon-components-svelte";
+
+	let previewWidth;
+	let mediaErrorMessage = "";
+	let w = 400;
+
+	function onQRScan(event: CustomEvent) {
+		alert(event.detail.qrContent);
+	}
+
 	initLocale('fr', { fr });
 
 	let isbn = ''
 	let bar = 'qux'
 	let result: Array<Book2> = []
+	let scanpause = false;
 
 	async function doPost () {
 		const res = await fetch('http://127.0.0.1:8000/book/notice?in_isbn='+isbn, {
@@ -50,6 +62,24 @@
 
 	}
 
+	async function doPost2 (isbn:string) {
+		scanpause = true;
+		const res = await fetch('http://127.0.0.1:8000/book/notice?in_isbn='+isbn, {
+			method: 'POST',
+			body: JSON.stringify({
+				isbn: isbn,
+			})
+		})
+
+		const json = <Book2>await res.json()
+		json.id = Math.random().toString(36).substr(2, 10)
+		console.log(json)
+		isbn = ''
+		result = [json,...result]
+
+		scanpause = false;
+	}
+
 	function handleClick() {
 		result = result.slice(1);
 	}
@@ -57,6 +87,9 @@
 
 <svelte:component this={dashboard.theme.dashboard} {dashboard}>
 
+	<Grid>
+		<Row>
+			<Column>
 
 	<Tile><h1>Svelte Admin books adding</h1>
 
@@ -110,7 +143,47 @@
 	</Form>
 	</Tile>
 
+			</Column>
+
+			<Column>
+				<Tile>
+					<h1>Mobile scan
+					</h1>
+					<div class="barcode-scanner">
+<!--						<QrCodeScanner-->
+<!--							scanSuccess={(e) => {console.log(e)}}-->
+<!--							scanFailure={(e) => {console.log(e)}}-->
+<!--							paused={false}-->
+<!--							width={320}-->
+<!--							height={320}-->
+<!--							class="w-full max-w-sm bg-slate-700 rounded-lg overflow-hidden"-->
+<!--						/>-->
+						<QrCodeScanner
+							on:detect={(e) => doPost2(e.detail.decodedText)}
+							paused={scanpause}
+							width={320}
+							height={320}
+							class="w-full max-w-sm bg-slate-700 rounded-lg overflow-hidden"
+						/>
+					</div>
+
+					<style>
+              .barcode-scanner {
+                  width: 100%;
+                  max-width: 384px;
+                  aspect-ratio: 1;
+              }
+					</style>
+
+				</Tile>
+			</Column>
+
+		</Row>
+		<Row>
+			<Column>
+
 	{#if result.length > 0}
+		<Tile>
 	<DataTable
 		headers={[
     { key: "name", value: "Name" },
@@ -158,6 +231,13 @@
 			{/if}
 		</svelte:fragment>
 	</DataTable>
+		</Tile>
 	{/if}
+			</Column>
+		</Row>
+	</Grid>
+
+
+
 </svelte:component>
 

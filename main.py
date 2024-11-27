@@ -189,7 +189,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # Mount admin to your app
 # admin.mount_to(app)
 
-app.mount("/", StaticFiles(directory="frontend/build",  html=True), name="sveltekit")
+# app.mount("/", StaticFiles(directory="frontend/build",  html=True), name="sveltekit")
 
 
 if __name__ == "__main__":

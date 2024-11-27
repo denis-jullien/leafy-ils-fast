@@ -98,3 +98,7 @@ https://github.com/quickwit-oss/tantivy as a library !
 https://github.com/typesense/typesense
 https://github.com/valeriansaliou/sonic
 https://github.com/sqlalchemy/sqlalchemy/discussions/9466
+https://stackoverflow.com/questions/68676884/sqlite-using-fts5-table-to-perform-all-queries-instead-of-main-table
+https://news.ycombinator.com/item?id=41198422
+https://github.com/abiliojr/fts5-snowball
+https://stackoverflow.com/questions/71830772/how-can-i-allow-loading-sqlite-extensions-with-a-sqlalchemy-engine
