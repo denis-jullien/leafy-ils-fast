@@ -52,5 +52,5 @@ COPY .. .
 
 EXPOSE 8000
 
-#CMD ["/app/.venv/bin/fastapi", "run"]
-ENTRYPOINT litefs mount
+CMD ["/app/.venv/bin/fastapi", "run"]
+#ENTRYPOINT litefs mount

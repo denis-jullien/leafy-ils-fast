@@ -5,10 +5,16 @@
 	import { checkPasswordScore } from '$lib/password'
 	import { showNotification, Button } from "saraui"
 
-
 	import { page } from '$app/stores'
-	const token = $page.url.searchParams.get('token')
-	const email = $page.url.searchParams.get('email')
+	import { onMount } from 'svelte';
+
+	let token: string | null = null;
+	let email: string | null = null;
+
+	onMount(() => {
+		token = $page.url.searchParams.get('token') ;
+		email = $page.url.searchParams.get('email');
+	});
 
 	const dispatch = createEventDispatcher()
 
