@@ -10,6 +10,9 @@
             "args": [
                 "format",
                 "backend",
+                "backend/internals",
+                "backend/routers",
+                "backend/unit_tests",
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -27,6 +30,9 @@
             "args": [
                 "check",
                 "backend",
+                "backend/internals",
+                "backend/routers",
+                "backend/unit_tests",
                 "--exclude",
                 "__init__.py",
             ],

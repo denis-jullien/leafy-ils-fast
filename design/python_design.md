@@ -13,7 +13,7 @@ root
         - __init__.py
         - book.py
         - family.py
-        - family_member.py
+        - member.py
     - internals/
         - ~~log_management.py~~
         - table_management.py
