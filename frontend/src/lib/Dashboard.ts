@@ -4,6 +4,7 @@ import Home from 'carbon-icons-svelte/lib/Home.svelte';
 import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
 import Switcher from 'carbon-icons-svelte/lib/Switcher.svelte';
 import User from 'carbon-icons-svelte/lib/User.svelte';
+import ArrowLeft from "carbon-icons-svelte/lib/ArrowLeft.svelte";
 
 import { DashboardDefinition, CallbackAction, UrlAction, Submenu } from '@orbitale/svelte-admin';
 import { carbon } from '@orbitale/svelte-admin/themes/svelte';
@@ -38,7 +39,8 @@ export const dashboard = new DashboardDefinition({
 		}
 	},
 	sideMenu: [
-		new UrlAction('Homepage', '/admin', Home),
+		new UrlAction('Homepage', '/', ArrowLeft , {htmlAttributes:{'data-sveltekit-reload':true}}),
+		new UrlAction('Overview', '/admin', Home),
 		new UrlAction('Quick Add Books', '/admin/newbook', Book),
 		new UrlAction('Books', '/admin/books/list', Book),
 		new UrlAction('Authors', '/admin/authors/list', User),

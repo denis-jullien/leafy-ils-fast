@@ -5,6 +5,10 @@ Everything you need to build a Svelte project, powered by [`sv`](https://github.
 https://github.com/phillipdupuis/pydantic-to-typescript
 https://www.saraui.com/
 
+data persitance :
+https://www.reddit.com/r/sveltejs/comments/177dzhg/sharing_data_between_routes_on_server_in_static/
+https://sveltequery.vercel.app/
+
 ```bash
 pip install 'pydantic-to-typescript>=2'
 pip install pydantic-extra-types
