@@ -3,18 +3,32 @@
 At the end the project will have the following architecture:
 
 ```
-project
-|--- src/
-|--- |--- database_management
-|--- |--- |--- database.py
-|--- |--- |--- models.py
-|--- |--- ...
-|--- tests/
-|--- |--- unit/
-|--- |--- integration/
+root
+- backend/
+    - __init__.py
+    - main.py
+    - database.py
+    - models.py
+    - routers/
+        - __init__.py
+        - book.py
+        - family.py
+        - family_member.py
+    - internals/
+        - ~~log_management.py~~
+        - table_management.py
+    - unit_tests/
+        - internals/
+            - tools.py
+        - test_my_function.py
+        - ...
+- frontend/
+        - src/
+        - unit_tests/
+- integration_tests/
 ```
 
-Most of the time, we will have one class per file for simplicity and maintainability.
+We want to keep this project simple and maintainable.
 
 ## Source
 
