@@ -36,6 +36,7 @@
 		"@tailwindcss/typography": "^0.5.15",
 		"html5-qrcode": "^2.3.8",
 		"json-schema-to-typescript": "^15.0.3",
-		"saraui": "^1.4.0"
+		"saraui": "^1.4.0",
+		"svelte-formula": "^0.12.0"
 	}
 }

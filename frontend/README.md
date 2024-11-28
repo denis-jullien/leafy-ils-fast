@@ -9,6 +9,13 @@ data persitance :
 https://www.reddit.com/r/sveltejs/comments/177dzhg/sharing_data_between_routes_on_server_in_static/
 https://sveltequery.vercel.app/
 
+route protection:
+https://stackoverflow.com/questions/70271307/how-do-i-make-a-protected-route-handler-for-svelte-kit-using-static-adapter
+https://github.com/MathieuDoyon/svelte-kit-static-protected-route
+
+form validation
+https://svelte.dev/playground/b9a5d3829c77437bb548c3aafbe5cd5c?version=3.32.3
+
 ```bash
 pip install 'pydantic-to-typescript>=2'
 pip install pydantic-extra-types
