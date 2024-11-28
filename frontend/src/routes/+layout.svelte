@@ -4,9 +4,4 @@
 
 </script>
 
-<div class="layout">
-
-  <slot />
-
-</div>
-
+<slot />

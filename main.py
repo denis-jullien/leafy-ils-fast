@@ -158,12 +158,12 @@ async def books(request: Request):
 def hello_func():  
   return "Hello World"  
  
-@app.get("/login", response_class=HTMLResponse)
-def login_get(request: Request):
-    context = {
-        "request": request,
-    }
-    return templates.TemplateResponse("login.html", context)
+# @app.get("/login", response_class=HTMLResponse)
+# def login_get(request: Request):
+#     context = {
+#         "request": request,
+#     }
+#     return templates.TemplateResponse("login.html", context)
 
 # A private page that only logged in users can access.
 @app.get("/private", response_class=HTMLResponse)
