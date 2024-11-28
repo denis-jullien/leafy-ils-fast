@@ -2,7 +2,6 @@ import logging
 import os
 
 from sqlmodel import SQLModel, create_engine
-from sqlalchemy.sql import func
 
 from tools.log_management import LogManagement
 
@@ -31,7 +30,11 @@ class LeafyDatabase:
             engine_echo = True
         else:
             engine_echo = False
-        self._engine = create_engine(sqlite_url, echo=engine_echo)
+
+        connect_args = {"check_same_thread": False}  # to work with FastAPI
+        self._engine = create_engine(
+            sqlite_url, echo=engine_echo, connect_args=connect_args
+        )
 
     def start_database_engine(self):
         """Start database engine"""
@@ -49,43 +52,3 @@ class LeafyDatabase:
     def delete_database_permanentely(self):
         """Delete database file"""
         os.remove(self._database_name)
-
-    def normalize_string(self, string):
-        """normalize strings (case-insensitive, remove spaces and special characters)"""
-        return func.replace(func.replace(func.lower(string), " ", ""), "-", "")
-
-    def search_table_elements(self, statement, search_mapping: list):
-        """Search elements' table in a statement from a SQLModel select according to search_mapping
-
-        Parameters
-        ----------
-        statement:
-            result of SQLModel select
-            ex: statement = select(Book)
-        search_mapping
-            dynamically add filters based on non-None arguments
-            ex1:
-                search_mapping = [
-                    (title, Book.title),
-                    (author, Book.author)
-                ]
-            ex2:
-                search_mapping = [
-                    (firstname, FamilyMember.firstname),
-                    (surname, FamilyMember.surname),
-                    (birthdate, FamilyMember.birthdate),
-                    (family_referent, FamilyMember.family_referent),
-                ]
-                if family is not None:
-                    search_mapping.append((family.id, FamilyMember.family_id))
-
-        Returns
-        ----------
-        statement updated
-        """
-        for value, column in search_mapping:
-            if value is not None:
-                statement = statement.where(
-                    self.normalize_string(column).contains(self.normalize_string(value))
-                )
-        return statement

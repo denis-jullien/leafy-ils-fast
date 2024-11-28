@@ -9,8 +9,10 @@
             "command": "ruff",
             "args": [
                 "format",
-                "poc/sqlmodel/src",
-                "poc/sqlmodel/tests",
+                "backend",
+                "backend/internals",
+                "backend/routers",
+                "backend/unit_tests",
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -27,8 +29,10 @@
             "command": "ruff",
             "args": [
                 "check",
-                "poc/sqlmodel/src",
-                "poc/sqlmodel/tests",
+                "backend",
+                "backend/internals",
+                "backend/routers",
+                "backend/unit_tests",
                 "--exclude",
                 "__init__.py",
             ],

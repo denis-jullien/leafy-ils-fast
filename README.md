@@ -90,6 +90,23 @@ https://unsplash.com/fr/photos/art-abstrait-rose-et-vert-ruJm3dBXCqw
 https://github.com/gwu-libraries/launchpad/blob/8901f91e3dc458baf97a09f0da8dc51218387c8e/lp/ui/apis.py#L57
 https://github.com/safwansamsudeen/infilib/blob/main/src/lib/helpers.js#L270
 
+# FastAPI with SQLModel
+
+https://www.gormanalysis.com/blog/many-to-many-relationships-in-fastapi/
+
+## To hash password
+
+https://sqlmodel.tiangolo.com/tutorial/fastapi/update-extra-data/#update-models-with-extra-data
+https://passlib.readthedocs.io/en/stable/
+
+## Dependency
+
+https://sqlmodel.tiangolo.com/tutorial/fastapi/session-with-dependency/
+
+## Tests
+
+https://sqlmodel.tiangolo.com/tutorial/fastapi/tests/
+
 ## Scearch engine 
 
 https://lab.abilian.com/Tech/Search/Comparison%20of%20open%20source%20search%20engines/
