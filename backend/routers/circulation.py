@@ -1,9 +1,11 @@
+import sys
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
-from ..database import get_session
-from ..models import (
+sys.path.append("backend")
+from database import get_session
+from models import (
     CirculationTable,
     CirculationPublic,
     CirculationCreate,
