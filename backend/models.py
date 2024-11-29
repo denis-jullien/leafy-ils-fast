@@ -68,7 +68,7 @@ class BookUpdate(SharedUpdate):
 class FamilyBase(SharedBase):
     email: Optional[str]
     phone_number: Optional[str]
-    last_adhesion_date: date
+    # last_adhesion_date: Optional[date] = None
 
 
 class FamilyTable(FamilyBase, table=True):
@@ -87,7 +87,7 @@ class FamilyCreate(FamilyBase):
 class FamilyUpdate(SharedUpdate):
     email: Optional[str] = None
     phone_number: Optional[str] = None
-    last_adhesion_date: Optional[date] = None
+    # last_adhesion_date: Optional[date] = None
 
 
 # Member

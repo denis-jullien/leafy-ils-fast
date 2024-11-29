@@ -3,6 +3,7 @@ import sys
 from fastapi.testclient import TestClient
 
 sys.path.append("backend")
+from tools import *
 
 
 def test_update_unknown_book(client: TestClient) -> None:

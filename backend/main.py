@@ -3,9 +3,8 @@ import sys
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-sys.path.append("backend")
-from database import create_db_and_tables
-from routers import book, family, member, circulation
+from backend.database import create_db_and_tables
+from backend.routers import book, family, member, circulation
 
 
 @asynccontextmanager
