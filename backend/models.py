@@ -1,4 +1,3 @@
-
 from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional
