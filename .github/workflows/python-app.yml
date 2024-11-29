@@ -34,10 +34,10 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with ruff
       run: |
-        ruff check backend backend/internals backend/routers backend/unit_tests
+        ruff check
     - name: Format with ruff
       run: |
-        ruff format --check --diff backend backend/internals backend/routers backend/unit_tests
+        ruff format --check --diff
 
   # unit_tests:
 
