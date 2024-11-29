@@ -74,8 +74,8 @@ SQLModel allows us to access database through Python classes based on Pydantic f
 flowchart LR
     Book[(Book)]
     Author[(Author)]
-    BorrowHistory[(BorrowHistory)]
-    FamilyMember[(FamilyMember)]
+    Circulation[(Circulation)]
+    Member[(Member)]
     Family[(Family)]
     Portal[(Portal)]
     Calendar[(Calendar)]
@@ -83,23 +83,23 @@ flowchart LR
 
     Book --author--> Author
     Author --book--> Book
-    BorrowHistory --book--> Book
-    Book --borrow_history--> BorrowHistory
-    BorrowHistory --member--> FamilyMember
-    FamilyMember --borrow_history--> BorrowHistory
+    Circulation --book--> Book
+    Book --borrow_history--> Circulation
+    Circulation --member--> Member
+    Member --borrow_history--> Circulation
 
-    Family --members--> FamilyMember
-    FamilyMember --family--> Family
-    Family --family_referent--> FamilyMember
-    FamilyMember --referent_of_family--> Family
+    Family --members--> Member
+    Member --family--> Family
+    Family --family_referent--> Member
+    Member --referent_of_family--> Family
 
     Portal --highlighting--> Book
 ```
 
 - Book and Author will be used to make the catalog
 - each adhesion is made by Family
-- each Family is composed of at least one FamilyMember as referent
-- Book and Family need to shared a BorrowHistory
+- each Family is composed of at least one Member as referent
+- Book and Family need to shared a borrow history through Circulation
 - Portal links the UI Portal view with few books
 - Calendar contains all events and planned activities
 - Blog contains articles' information
