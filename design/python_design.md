@@ -14,6 +14,7 @@ root
         - book.py
         - family.py
         - member.py
+        - circulation.py
     - internals/
         - ~~log_management.py~~
         - table_management.py

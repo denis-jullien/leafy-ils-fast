@@ -1,17 +1,13 @@
-import logging
-import os
 
-from contextlib import asynccontextmanager
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
-from ..database import create_db_and_tables, global_engine, get_session
+from ..database import get_session
 from ..models import (
     MemberTable,
     MemberPublic,
     MemberCreate,
     MemberUpdate,
-    MemberSearch,
     MemberPublicWithFamily,
 )
 

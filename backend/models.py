@@ -1,4 +1,3 @@
-import uuid
 
 from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
@@ -10,14 +9,14 @@ from typing import Optional
 
 class SharedBase(SQLModel):
     archived: bool = Field(default=False, index=True)
-    registration_date: Optional[date] = None
-    # last_update_date: Optional[date] = None
+    created_date: Optional[date] = None
+    last_update_date: Optional[date] = None
 
 
 class SharedUpdate(SQLModel):
     archived: Optional[bool] = None
-    registration_date: Optional[date] = None
-    # last_update_date: Optional[date] = None
+    created_date: Optional[date] = None
+    last_update_date: Optional[date] = None
 
 
 # Book
@@ -35,11 +34,11 @@ class BookBase(SharedBase):
     langage: Optional[str] = None
     cover: Optional[str] = None
     available: bool = Field(default=True, index=True)
-    # history: list["BorrowHistory"] = Relationship(back_populates="book")
 
 
 class BookTable(BookBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    circulation_history: list["CirculationTable"] = Relationship(back_populates="book")
 
 
 class BookPublic(BookBase):
@@ -62,10 +61,6 @@ class BookUpdate(SharedUpdate):
     langage: Optional[str] = None
     cover: Optional[str] = None
     available: Optional[bool] = None
-
-
-class BookSearch(BookUpdate):
-    pass
 
 
 # Family
@@ -96,10 +91,6 @@ class FamilyUpdate(SharedUpdate):
     last_adhesion_date: Optional[date] = None
 
 
-class FamilySearch(FamilyUpdate):
-    pass
-
-
 # Member
 
 
@@ -109,12 +100,14 @@ class MemberBase(SharedBase):
     surname: str
     birthdate: Optional[date] = None
     family_id: Optional[int] = Field(default=None, foreign_key="familytable.id")
-    # borrow_history: list["BorrowHistory"] = Relationship(back_populates="member")
 
 
 class MemberTable(MemberBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     family: Optional[FamilyTable] = Relationship(back_populates="members")
+    circulation_history: list["CirculationTable"] = Relationship(
+        back_populates="member"
+    )
 
 
 class MemberPublic(MemberBase):
@@ -133,8 +126,39 @@ class MemberUpdate(SharedUpdate):
     family_id: Optional[int] = None
 
 
-class MemberSearch(MemberUpdate):
+# Circulation
+
+
+class CirculationBase(SharedBase):
+    borrowed_date: date
+    returned_date: Optional[date] = None
+
+    book_id: int = Field(default=None, foreign_key="booktable.id")
+    member_id: int = Field(default=None, foreign_key="membertable.id")
+
+
+class CirculationTable(CirculationBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    book: BookTable = Relationship(back_populates="circulation_history")
+    member: MemberTable = Relationship(back_populates="circulation_history")
+
+
+class CirculationPublic(CirculationBase):
+    id: int
+
+
+class CirculationCreate(CirculationBase):
     pass
+
+
+class CirculationUpdate(SharedUpdate):
+    borrowed_date: Optional[date] = None
+    returned_date: Optional[date] = None
+    book_id: Optional[int] = None
+    member_id: Optional[int] = None
+
+
+# Public relationship
 
 
 class MemberPublicWithFamily(MemberPublic):
@@ -143,3 +167,8 @@ class MemberPublicWithFamily(MemberPublic):
 
 class FamilyPublicWithMembers(FamilyPublic):
     members: list[MemberPublic] = []
+
+
+class CirculationPublicWithRelationship(CirculationPublic):
+    book: Optional[BookPublic] = None
+    member: Optional[MemberPublic] = None
