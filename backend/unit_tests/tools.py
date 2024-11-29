@@ -5,9 +5,8 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-sys.path.append("backend")
 from database import get_session
-from main import app
+from backend.main import app
 
 
 @pytest.fixture(name="session")

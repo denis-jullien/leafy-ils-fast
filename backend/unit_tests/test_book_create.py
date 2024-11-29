@@ -3,6 +3,7 @@ import sys
 from fastapi.testclient import TestClient
 
 sys.path.append("backend")
+from tools import *
 
 
 @pytest.mark.parametrize(
