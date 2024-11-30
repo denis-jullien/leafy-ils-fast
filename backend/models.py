@@ -4,6 +4,27 @@ from typing import Optional, Union
 from pydantic import PositiveInt, AnyUrl
 from pydantic_extra_types.language_code import LanguageAlpha2
 
+# from fastapi_users.db import SQLAlchemyBaseUserTableUUID
+from fastapi_users_db_sqlmodel import SQLModelBaseUserDB
+from fastapi_users import schemas
+import uuid
+
+# User (for authentification)
+
+class User(SQLModelBaseUserDB, table=True):
+    # first_name: str = Field(nullable=False)
+    # last_name: str = Field(nullable=False)
+    pass
+
+class UserRead(schemas.BaseUser[uuid.UUID]):
+    pass
+
+class UserCreate(schemas.BaseUserCreate):
+    pass
+
+class UserUpdate(schemas.BaseUserUpdate):
+    pass
+
 # Shared models
 
 
