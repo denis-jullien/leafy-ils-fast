@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+
 def test_delete_unknown_book(client: TestClient) -> None:
     response = client.delete("/api/v1/books/1")
     assert response.status_code == 404

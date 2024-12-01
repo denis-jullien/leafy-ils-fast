@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+
 def test_read_all_book_without_book(client: TestClient) -> None:
     response = client.get("/api/v1/books")
     assert response.status_code == 200

@@ -2,7 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 
-
 def test_update_unknown_book(client: TestClient) -> None:
     new_data = {"author": "new_author"}
 
