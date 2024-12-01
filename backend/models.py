@@ -1,7 +1,7 @@
 from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
-from typing import Optional, Union
-from pydantic import PositiveInt, AnyUrl
+from typing import Optional
+from pydantic import PositiveInt
 from pydantic_extra_types.language_code import LanguageAlpha2
 
 # from fastapi_users.db import SQLAlchemyBaseUserTableUUID

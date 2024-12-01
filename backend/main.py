@@ -1,5 +1,3 @@
-import sys
-
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
