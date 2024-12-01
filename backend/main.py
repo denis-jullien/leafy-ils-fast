@@ -11,8 +11,6 @@ from backend.users import (
     fastapi_users,
 )
 from backend.models import User, UserCreate, UserRead, UserUpdate
-from backend.dbadmin import dbadmin
-
 
 @asynccontextmanager
 async def startup(app: FastAPI):
@@ -71,13 +69,9 @@ async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello  {user.email}!"}
 
 
-# Mount admin to your app
-dbadmin.mount_to(app)
-
-
 # Serve static frontend
 app.mount(
     "/",
-    StaticFiles(directory="frontend/build", html=True),
+    StaticFiles(directory="frontend/build", html=True, check_dir=False),
     name="sveltekit",
 )
