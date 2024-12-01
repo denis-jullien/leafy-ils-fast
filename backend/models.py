@@ -11,19 +11,24 @@ import uuid
 
 # User (for authentification)
 
+
 class User(SQLModelBaseUserDB, table=True):
     # first_name: str = Field(nullable=False)
     # last_name: str = Field(nullable=False)
     pass
 
+
 class UserRead(schemas.BaseUser[uuid.UUID]):
     pass
+
 
 class UserCreate(schemas.BaseUserCreate):
     pass
 
+
 class UserUpdate(schemas.BaseUserUpdate):
     pass
+
 
 # Shared models
 
@@ -88,6 +93,7 @@ class BookUpdate(SharedUpdate):
     isbn: Optional[PositiveInt] = None
     format: Optional[str] = None
     publication_date: Optional[str] = None
+
 
 # Family
 

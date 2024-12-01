@@ -37,10 +37,10 @@ jobs:
         run: |
           ruff check .
         working-directory: ./backend
-  #    - name: Format with ruff
-  #      run: |
-  #        ruff format --check --diff .
-  #      working-directory: ./backend
+      - name: Format with ruff
+        run: |
+          ruff format --check --diff .
+        working-directory: ./backend
 
   unit_tests:
 

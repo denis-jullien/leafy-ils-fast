@@ -9,6 +9,7 @@ from fastapi_users.authentication import (
     JWTStrategy,
     CookieTransport,
 )
+
 # from fastapi_users.db import SQLAlchemyUserDatabase
 from fastapi_users_db_sqlmodel import SQLModelUserDatabase
 
@@ -17,6 +18,7 @@ from backend.database import get_session
 from sqlmodel import Session
 
 SECRET = "SECRET"
+
 
 async def get_user_db(session: Session = Depends(get_session)):
     yield SQLModelUserDatabase(session, User)
@@ -57,9 +59,11 @@ auth_backend = AuthenticationBackend(
     get_strategy=get_jwt_strategy,
 )
 
-cookie_transport = CookieTransport(cookie_max_age=3600,
-                                   cookie_httponly=False,
-                                   cookie_secure=False,)
+cookie_transport = CookieTransport(
+    cookie_max_age=3600,
+    cookie_httponly=False,
+    cookie_secure=False,
+)
 
 auth_cookie_backend = AuthenticationBackend(
     name="cookie",
@@ -67,6 +71,8 @@ auth_cookie_backend = AuthenticationBackend(
     get_strategy=get_jwt_strategy,
 )
 
-fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend, auth_cookie_backend])
+fastapi_users = FastAPIUsers[User, uuid.UUID](
+    get_user_manager, [auth_backend, auth_cookie_backend]
+)
 
 current_active_user = fastapi_users.current_user(active=True)

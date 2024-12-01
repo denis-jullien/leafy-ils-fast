@@ -4,8 +4,14 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.database import create_db_and_tables
 from backend.routers import book, family, member, circulation
-from backend.users import auth_backend, auth_cookie_backend, current_active_user, fastapi_users
+from backend.users import (
+    auth_backend,
+    auth_cookie_backend,
+    current_active_user,
+    fastapi_users,
+)
 from backend.models import User, UserCreate, UserRead, UserUpdate
+
 
 @asynccontextmanager
 async def startup(app: FastAPI):
@@ -27,10 +33,14 @@ app.include_router(circulation.router, prefix=API_PREFIX)
 AUTH_PREFIX = "/auth"
 
 app.include_router(
-    fastapi_users.get_auth_router(auth_backend), prefix=AUTH_PREFIX+"/jwt", tags=["auth"]
+    fastapi_users.get_auth_router(auth_backend),
+    prefix=AUTH_PREFIX + "/jwt",
+    tags=["auth"],
 )
 app.include_router(
-    fastapi_users.get_auth_router(auth_cookie_backend), prefix=AUTH_PREFIX+"/cookie", tags=["auth"]
+    fastapi_users.get_auth_router(auth_cookie_backend),
+    prefix=AUTH_PREFIX + "/cookie",
+    tags=["auth"],
 )
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
@@ -53,10 +63,16 @@ app.include_router(
     tags=["users"],
 )
 
+
 # Demo auth route
 @app.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello  {user.email}!"}
 
+
 # Serve static frontend
-app.mount("/", StaticFiles(directory="frontend/build",  html=True, check_dir=False), name="sveltekit")
+app.mount(
+    "/",
+    StaticFiles(directory="frontend/build", html=True, check_dir=False),
+    name="sveltekit",
+)
