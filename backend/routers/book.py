@@ -4,7 +4,6 @@ from sqlmodel import Session, select
 from backend.database import get_session
 from backend.models import BookTable, BookPublic, BookCreate, BookUpdate
 from backend.internals.book_notice import isbn2book
-from pydantic import BaseModel
 
 
 router = APIRouter(
