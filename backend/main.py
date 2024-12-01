@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from backend.database import create_db_and_tables
-from backend.routers import book, family, member, circulation
+from backend.routers import book, family, member# circulation
 from backend.users import (
     auth_backend,
     auth_cookie_backend,
@@ -11,7 +11,7 @@ from backend.users import (
     fastapi_users,
 )
 from backend.models import User, UserCreate, UserRead, UserUpdate
-
+from backend.dbadmin import dbadmin
 
 @asynccontextmanager
 async def startup(app: FastAPI):
@@ -26,7 +26,7 @@ API_PREFIX = "/api/v1"
 app.include_router(book.router, prefix=API_PREFIX)
 app.include_router(family.router, prefix=API_PREFIX)
 app.include_router(member.router, prefix=API_PREFIX)
-app.include_router(circulation.router, prefix=API_PREFIX)
+# app.include_router(circulation.router, prefix=API_PREFIX)
 
 # Auth
 
@@ -70,9 +70,13 @@ async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello  {user.email}!"}
 
 
+# Mount admin to your app
+dbadmin.mount_to(app)
+
+
 # Serve static frontend
 app.mount(
     "/",
-    StaticFiles(directory="frontend/build", html=True, check_dir=False),
+    StaticFiles(directory="frontend/build", html=True),
     name="sveltekit",
 )

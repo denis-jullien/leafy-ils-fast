@@ -25,6 +25,14 @@ def create_book(*, session: Session = Depends(get_session), book: BookCreate):
 
 @router.post("/isbn", response_model=BookPublic)
 async def create_book_isbn(*, session: Session = Depends(get_session), isbn: str):
+    """
+    Isbn for reference :
+    978-2013944762
+    9782253067900
+    9782377940820
+    9782070438617
+    9780738531366
+    """
     book = await isbn2book(isbn)
 
     if book is None:
