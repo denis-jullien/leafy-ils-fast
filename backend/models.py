@@ -52,8 +52,8 @@ class BookBase(SharedBase):
     category_type: Optional[str] = Field(default=None, index=True)
     category_age: Optional[str] = Field(default=None, index=True)
     category_topics: Optional[str] = None
-    langage: Optional[LanguageAlpha2] = None
-    cover_url: Optional[str] = None
+    language: Optional[LanguageAlpha2] = None
+    cover: Optional[str] = None
     available: bool = Field(default=True, index=True)
     isbn: Optional[PositiveInt] = None
     format: Optional[str] = None
@@ -82,10 +82,12 @@ class BookUpdate(SharedUpdate):
     category_type: Optional[str] = None
     category_age: Optional[str] = None
     category_topics: Optional[str] = None
-    langage: Optional[str] = None
-    cover_url: Optional[str] = None
+    language: Optional[LanguageAlpha2] = None
+    cover: Optional[str] = None
     available: Optional[bool] = None
-
+    isbn: Optional[PositiveInt] = None
+    format: Optional[str] = None
+    publication_date: Optional[str] = None
 
 # Family
 

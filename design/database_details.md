@@ -28,7 +28,7 @@ For books catalog we need:
     - age: adulte, ado, enfant
     - subjects / topics (optional)
 - catalog: pierre_vives, arbousiers
-- langage (default: french)
+- language (default: french)
 - cover (picture) (optional)
 - date of registration
 - borrow_information
