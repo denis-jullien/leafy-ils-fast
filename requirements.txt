@@ -8,3 +8,4 @@ pydantic-extra-types
 pycountry
 devtools
 rdflib
+fastapi-users-db-sqlmodel

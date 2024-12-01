@@ -1,7 +1,29 @@
 from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
-from typing import Optional
+from typing import Optional, Union
+from pydantic import PositiveInt, AnyUrl
+from pydantic_extra_types.language_code import LanguageAlpha2
 
+# from fastapi_users.db import SQLAlchemyBaseUserTableUUID
+from fastapi_users_db_sqlmodel import SQLModelBaseUserDB
+from fastapi_users import schemas
+import uuid
+
+# User (for authentification)
+
+class User(SQLModelBaseUserDB, table=True):
+    # first_name: str = Field(nullable=False)
+    # last_name: str = Field(nullable=False)
+    pass
+
+class UserRead(schemas.BaseUser[uuid.UUID]):
+    pass
+
+class UserCreate(schemas.BaseUserCreate):
+    pass
+
+class UserUpdate(schemas.BaseUserUpdate):
+    pass
 
 # Shared models
 
@@ -24,15 +46,18 @@ class SharedUpdate(SQLModel):
 class BookBase(SharedBase):
     title: str = Field(index=True)
     author: str = Field(index=True)
-    synopsis: Optional[str] = None
-    edition: Optional[str] = None
+    abstract: Optional[str] = None
+    publisher: Optional[str] = None
     catalog: Optional[str] = Field(default=None, index=True)
     category_type: Optional[str] = Field(default=None, index=True)
     category_age: Optional[str] = Field(default=None, index=True)
     category_topics: Optional[str] = None
-    langage: Optional[str] = None
+    language: Optional[LanguageAlpha2] = None
     cover: Optional[str] = None
     available: bool = Field(default=True, index=True)
+    isbn: Optional[PositiveInt] = None
+    format: Optional[str] = None
+    publication_date: Optional[str] = None
 
 
 class BookTable(BookBase, table=True):
@@ -51,16 +76,18 @@ class BookCreate(BookBase):
 class BookUpdate(SharedUpdate):
     title: Optional[str] = None
     author: Optional[str] = None
-    synopsis: Optional[str] = None
-    edition: Optional[str] = None
+    abstract: Optional[str] = None
+    publisher: Optional[str] = None
     catalog: Optional[str] = None
     category_type: Optional[str] = None
     category_age: Optional[str] = None
     category_topics: Optional[str] = None
-    langage: Optional[str] = None
+    language: Optional[LanguageAlpha2] = None
     cover: Optional[str] = None
     available: Optional[bool] = None
-
+    isbn: Optional[PositiveInt] = None
+    format: Optional[str] = None
+    publication_date: Optional[str] = None
 
 # Family
 

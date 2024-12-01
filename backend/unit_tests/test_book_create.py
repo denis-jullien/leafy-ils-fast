@@ -2,8 +2,7 @@ import pytest
 import sys
 from fastapi.testclient import TestClient
 
-sys.path.append("backend")
-from tools import *
+from .tools import *
 
 
 @pytest.mark.parametrize(
@@ -13,13 +12,13 @@ from tools import *
         {
             "title": "title",
             "author": "author",
-            "synopsis": "synopsis",
-            "edition": "edition",
+            "abstract": "abstract",
+            "publisher": "publisher",
             "catalog": "catalog",
             "category_type": "category_type",
             "category_age": "category_age",
             "category_topics": "category_topics",
-            "langage": "langage",
+            "language": "fr",
             "cover": "cover",
             "available": False,
             "archived": True,
@@ -27,7 +26,7 @@ from tools import *
     ],
 )
 def test_create_book(client: TestClient, data: dict) -> None:
-    response = client.post("/books", json=data)
+    response = client.post("/api/v1/books", json=data)
     assert response.status_code == 200
 
     data_response = response.json()
