@@ -1,7 +1,4 @@
-import sys
 from fastapi.testclient import TestClient
-
-from .tools import *
 
 
 def test_delete_unknown_book(client: TestClient) -> None:

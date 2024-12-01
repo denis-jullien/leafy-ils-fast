@@ -1,8 +1,5 @@
 import pytest
-import sys
 from fastapi.testclient import TestClient
-
-from .tools import *
 
 
 def test_update_unknown_book(client: TestClient) -> None:

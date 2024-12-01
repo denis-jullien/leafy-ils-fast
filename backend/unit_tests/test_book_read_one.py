@@ -1,8 +1,5 @@
 import pytest
-import sys
 from fastapi.testclient import TestClient
-
-from .tools import *
 
 
 def test_read_unknown_book(client: TestClient) -> None:
@@ -93,7 +90,9 @@ def test_read_updated_book(client: TestClient, init_data: dict, new_data: dict) 
     assert response.status_code == 200
     created_data_response = response.json()
 
-    response = client.patch(f"/api/v1/books/{created_data_response["id"]}", json=new_data)
+    response = client.patch(
+        f"/api/v1/books/{created_data_response["id"]}", json=new_data
+    )
     assert response.status_code == 200
 
     updated_data_expected = init_data

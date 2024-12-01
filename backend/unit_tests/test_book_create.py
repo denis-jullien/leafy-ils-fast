@@ -1,8 +1,5 @@
 import pytest
-import sys
 from fastapi.testclient import TestClient
-
-from .tools import *
 
 
 @pytest.mark.parametrize(

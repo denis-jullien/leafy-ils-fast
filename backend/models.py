@@ -1,7 +1,7 @@
 from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
-from typing import Optional, Union
-from pydantic import PositiveInt, AnyUrl
+from typing import Optional
+from pydantic import PositiveInt
 from pydantic_extra_types.language_code import LanguageAlpha2
 
 # from fastapi_users.db import SQLAlchemyBaseUserTableUUID
@@ -11,19 +11,24 @@ import uuid
 
 # User (for authentification)
 
+
 class User(SQLModelBaseUserDB, table=True):
     # first_name: str = Field(nullable=False)
     # last_name: str = Field(nullable=False)
     pass
 
+
 class UserRead(schemas.BaseUser[uuid.UUID]):
     pass
+
 
 class UserCreate(schemas.BaseUserCreate):
     pass
 
+
 class UserUpdate(schemas.BaseUserUpdate):
     pass
+
 
 # Shared models
 
@@ -88,6 +93,7 @@ class BookUpdate(SharedUpdate):
     isbn: Optional[PositiveInt] = None
     format: Optional[str] = None
     publication_date: Optional[str] = None
+
 
 # Family
 

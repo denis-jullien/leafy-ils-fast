@@ -1,7 +1,4 @@
-import sys
 from fastapi.testclient import TestClient
-
-from .tools import *
 
 
 def test_read_all_book_without_book(client: TestClient) -> None:
