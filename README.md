@@ -34,11 +34,8 @@ Note: use a venv for python installation
 
 ## Launcher
 
-- FastAPI: `fastapi dev main.py`
+- FastAPI: `fastapi dev backend/main.py`
 
-## Tailwind
-
-```npx tailwindcss -i templates/main.css -o static/css/main.css --watch```
 
 ## Sources
 

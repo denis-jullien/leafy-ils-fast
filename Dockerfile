@@ -23,16 +23,15 @@ RUN pip install poetry && poetry config virtualenvs.in-project true
 
 WORKDIR /app
 
-COPY ./pyproject.toml poetry.lock ./
+RUN python -m venv .venv
+#ENV PATH="/app/.venv/bin:$PATH"
 
-RUN poetry install
+COPY ./requirements.txt ./
+RUN /app/.venv/bin/pip install -r requirements.txt
 
 FROM python:3.13.0-alpine3.20
 
 WORKDIR /app
-
-
-
 
 COPY --from=flyio/litefs:0.5 /usr/local/bin/litefs /usr/local/bin/litefs
 # Copy the possible LiteFS configurations.
@@ -46,11 +45,11 @@ RUN apk add bash fuse3 sqlite ca-certificates curl
 
 COPY --from=frontend-builder /app/frontend/build/ frontend/build/
 
-COPY --from=builder /app/.venv .venv/
+COPY --from=builder /app/.venv /app/.venv/
 
-COPY .. .
+COPY ./backend/ /app/backend/
 
 EXPOSE 8000
 
-CMD ["/app/.venv/bin/fastapi", "run"]
+CMD ["/app/.venv/bin/fastapi", "run", "backend/main.py"]
 #ENTRYPOINT litefs mount

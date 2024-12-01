@@ -70,7 +70,7 @@ async function getBooks(): Promise<Array<Book2>> {
 		return [];
 	}
 
-	const response = await fetch('http://localhost:8000/books');
+	const response = await fetch('/aî/v1/books');
 	// Watch : If a object as a null value, could cause problem with crud CallbackStateProvider
 	let items = <Array<Book2>> await response.json()
 

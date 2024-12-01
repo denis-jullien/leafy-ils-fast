@@ -1,11 +1,9 @@
-fastapi[standard] ~= 0.115.4
-fastapi-users ~= 13.0.0
-fastapi-users[sqlalchemy]
-sqlmodel
-aiosqlite
-starlette-admin
-pydantic-extra-types
-pycountry
-devtools
-rdflib
-fastapi-users-db-sqlmodel
+fastapi[standard] ~= 0.115.5
+fastapi-users[sqlalchemy] ~= 14.0.0
+sqlmodel ~= 0.0.22
+fastapi-users-db-sqlmodel ~= 0.3.0
+pydantic-extra-types ~= 2.10.0
+pycountry ~= 24.6.1
+devtools ~= 0.12.2
+rdflib ~= 7.1.1
+aiosqlite ~= 0.20.0

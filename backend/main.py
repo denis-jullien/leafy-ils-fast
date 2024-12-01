@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from backend.database import create_db_and_tables
-from backend.routers import book, family, member, circulation
+from backend.routers import book, family, member  # circulation
 from backend.users import (
     auth_backend,
     auth_cookie_backend,
@@ -26,7 +26,7 @@ API_PREFIX = "/api/v1"
 app.include_router(book.router, prefix=API_PREFIX)
 app.include_router(family.router, prefix=API_PREFIX)
 app.include_router(member.router, prefix=API_PREFIX)
-app.include_router(circulation.router, prefix=API_PREFIX)
+# app.include_router(circulation.router, prefix=API_PREFIX)
 
 # Auth
 
