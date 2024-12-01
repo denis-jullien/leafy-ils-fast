@@ -1,9 +1,5 @@
 import pytest
-import sys
 from fastapi.testclient import TestClient
-
-from .tools import *
-
 
 def test_read_unknown_book(client: TestClient) -> None:
     response = client.get("/api/v1/books/1")
