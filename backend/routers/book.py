@@ -1,5 +1,3 @@
-import sys
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
