@@ -39,7 +39,6 @@ export const dashboard = new DashboardDefinition({
 		}
 	},
 	sideMenu: [
-		new UrlAction('Homepage', '/', ArrowLeft , {htmlAttributes:{'data-sveltekit-reload':true}}),
 		new UrlAction('Overview', '/admin', Home),
 		new UrlAction('Quick Add Books', '/admin/newbook', Book),
 		new UrlAction('Books', '/admin/books/list', Book),
@@ -52,6 +51,7 @@ export const dashboard = new DashboardDefinition({
 			new UrlAction('Submenu 2', '#', Book)
 		]),
 		new UrlAction('Books2', '/admin/books2/list', Book),
+		new UrlAction('Homepage', '/', ArrowLeft , {htmlAttributes:{'data-sveltekit-reload':true}}),
 	],
 	topLeftMenu: [
 		//new ThemeChangerAction(),

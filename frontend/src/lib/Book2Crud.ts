@@ -1,5 +1,6 @@
 // SvelteAdmin classes:
 import {
+	CallbackAction,
 	CallbackStateProcessor,
 	CallbackStateProvider,
 	CrudDefinition,
@@ -18,7 +19,9 @@ import {
 
 import Pen from 'carbon-icons-svelte/lib/Pen.svelte';
 import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
-import type { BookPublic } from '$lib/apiTypes';
+import type { BookCreate, BookPublic } from '$lib/apiTypes';
+import { MyApiInterface } from '$lib/internal/apiStorage';
+import Flash from 'carbon-icons-svelte/lib/Flash.svelte';
 
 // export type Book2 = {
 // 	id: number | string;
@@ -65,6 +68,8 @@ const fields = [
 // const IdField = new TextField('string', 'ID');
 
 const itemsPerPage = 10;
+
+let bookApi = new MyApiInterface<BookPublic>('/api/v1/books');
 
 async function getBooks(): Promise<Array<BookPublic>> {
 	if (typeof window === 'undefined') {
@@ -131,11 +136,15 @@ export const bookCrud2 = new CrudDefinition<BookPublic>({
 				new UrlAction('Delete', '/admin/books2/delete', TrashCan)
 			],
 			{
+				globalActions: [
+					new UrlAction('Quick Add', '/admin/newbook', Flash,  {buttonKind: 'danger-tertiary'}),
+					new UrlAction('New', '/admin/books2/new', Pen),
+				],
 				}
 		),
 		new View([...fields]),
 		new New(fields),
-		new Edit(fields),
+		new Edit(fields, []),
 		new Delete(fields, new UrlAction('List', '/admin/books2/list'))
 	],
 
@@ -145,27 +154,29 @@ export const bookCrud2 = new CrudDefinition<BookPublic>({
 		requestParameters: RequestParameters = {}
 	) {
 		if (operation.name === 'delete') {
-			alert('Hey, this delete is called with Javascript!');
-			// const id = (requestParameters.id || '').toString();
-			// getStorage().remove(id);
+			// alert('Hey, this delete is called with Javascript!');
+			const id = (requestParameters.id || '').toString();
+			bookApi.remove(id);
 
 			return Promise.resolve();
 		}
 
-		if (operation.name === 'edit' || operation.name === 'new') {
-			alert('Hey, this edit is called with Javascript!');
-			// const id =
-			// 	operation.name === 'edit' ? (requestParameters.id || '').toString() : faker.string.uuid();
-			// const entity = data as Book2;
-			// entity.id = id;
-			//
-			// if (operation.name === 'new') {
-			// 	getStorage().add(entity);
-			// } else {
-			// 	getStorage().update(entity);
-			// }
+		if (operation.name === 'edit'){
+			const entity = data as BookPublic;
+			entity.id = (requestParameters.id || '').toString();
+			bookApi.update(entity);
+			Object.defineProperty(document, "referrer", {get : function(){ return "/admin/books2/list"; }});
 
 			return Promise.resolve();
+		}
+
+
+		if (operation.name === 'new') {
+				const entity = data as BookPublic;
+				bookApi.add(entity);
+				Object.defineProperty(document, "referrer", {get : function(){ return "/admin/books2/list"; }});
+
+				return Promise.resolve();
 		}
 
 		console.error('StateProcessor error: Unsupported Books Crud action "' + operation.name + '".');
@@ -185,7 +196,7 @@ export const bookCrud2 = new CrudDefinition<BookPublic>({
 				throw new Error(`Invalid "page" value: expected a number, got "${page}".`);
 			}
 
-			let entities = await getBooks();
+			let entities = await bookApi.list(0, 10);
 
 			console.info('Entities: %o', entities);
 
@@ -211,17 +222,18 @@ export const bookCrud2 = new CrudDefinition<BookPublic>({
 		}
 
 		if (operation.name === 'edit' || operation.name === 'view') {
-			let entitie = await getoneBooks(requestParameters?.id || '');
-			return Promise.resolve(entitie);
+			return bookApi.get((requestParameters?.id || '').toString());
 			// return Promise.resolve(getStorage().get((requestParameters?.id || '').toString()));
 		}
-		//
-		// if (operation.name === 'entity_view') {
-		// 	return Promise.resolve(getStorage().get((requestParameters?.field_value || '').toString()));
-		// }
-		//
+
+		if (operation.name === 'entity_view') {
+			return bookApi.get((requestParameters?.field_value || '').toString());
+			// return Promise.resolve(getStorage().get((requestParameters?.field_value || '').toString()));
+		}
+
 		// if (operation.name === 'entity_list') {
-		// 	return Promise.resolve(getStorage().all());
+		// 	return bookApi.list(0, 100);
+		// 	// return Promise.resolve(getStorage().all());
 		// }
 
 		console.error('StateProvider error: Unsupported Books Crud action "' + operation.name + '".');
