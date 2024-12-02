@@ -13,6 +13,7 @@ export type Book = {
 
 export function getStorage(): InMemoryStorage<Book> {
 	if (!storage) {
+		console.log("new storage");
 		storage = new InMemoryStorage<Book>('Book', getBase);
 	}
 

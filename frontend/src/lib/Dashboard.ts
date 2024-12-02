@@ -18,14 +18,14 @@ import { bookCrud2 } from './Book2Crud';
 
 let newLinkIndex = 1;
 
-const dynamicallyCustomizable: Submenu = new Submenu('Dynamic menu', Switcher, [
-	new CallbackAction('Add a new link to the menu', null, () => {
-		dashboard.stores.topRightMenu.update((links) => {
-			dynamicallyCustomizable.links.push(new UrlAction('Custom link' + newLinkIndex++, '/'));
-			return [...links];
-		});
-	})
-]);
+// const dynamicallyCustomizable: Submenu = new Submenu('Dynamic menu', Switcher, [
+// 	new CallbackAction('Add a new link to the menu', null, () => {
+// 		dashboard.stores.topRightMenu.update((links) => {
+// 			dynamicallyCustomizable.links.push(new UrlAction('Custom link' + newLinkIndex++, '/'));
+// 			return [...links];
+// 		});
+// 	})
+// ]);
 
 export const dashboard = new DashboardDefinition({
 	theme: carbon,

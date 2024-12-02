@@ -21,7 +21,7 @@ def create_book(*, session: Session = Depends(get_session), book: BookCreate):
     return db_data
 
 
-@router.post("/isbn", response_model=BookPublic)
+@router.post("/{isbn}", response_model=BookPublic)
 async def create_book_isbn(*, session: Session = Depends(get_session), isbn: str):
     """
     Isbn for reference :
