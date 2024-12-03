@@ -1,3 +1,5 @@
+from xml.etree.ElementTree import Element
+
 from backend.models import BookCreate
 
 import xml.etree.ElementTree as ET
@@ -7,16 +9,10 @@ import httpx
 from PIL import Image
 from io import BytesIO
 
+from isbnlib import canonical
+import babelfish
 
-def clean_isbn(value):
-    isbn, sep, remainder = value.strip().partition(" ")
-    if len(isbn) < 10:
-        return ""
-    for char in "-:.;":
-        isbn = isbn.replace(char, "")
-    return isbn
-
-
+# --- bnf saprql test
 # PREFIX rdarelationships: <http://rdvocab.info/RDARelationshipsWEMI/>
 # PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 # SELECT *
@@ -107,6 +103,7 @@ async def isbn2book_sudoc(isbn: int) -> BookCreate | None:
                 format=row.format,
                 language="fr",
                 isbn=isbn,
+                record_source=row.book,
             )
             break
 
@@ -115,8 +112,66 @@ async def isbn2book_sudoc(isbn: int) -> BookCreate | None:
     return book
 
 
-async def isbn2book_bnf(isbn) -> BookCreate | None:
-    """Query bnf SRU api to find a book notice
+def unimarcxchange2book(record: Element):
+    namespaces = {
+        "mxc": "info:lc/xmlns/marcxchange-v2",
+    }
+
+    # dublincore format
+    title = record.findtext(".//dc:title", "", namespaces)
+    print(title)
+
+    source = record.findtext(".//dc:identifier", "", namespaces)
+    print(source)
+
+    author = record.findtext(".//dc:creator", "", namespaces)
+    print(author)
+
+    publisher = record.findtext(".//dc:publisher", "", namespaces)
+    print(publisher)
+
+    format = record.findtext(".//dc:format", "", namespaces)
+    print(format)
+
+    book = BookCreate(
+        title=record.findtext(".//dc:title", "", namespaces),
+        publication_date=record.findtext(".//dc:date", "", namespaces),
+        publisher=record.findtext(".//dc:publisher", "", namespaces),
+        author=record.findtext(".//dc:creator", "", namespaces),
+        format=record.findtext(".//dc:format", "", namespaces),
+        language=record.findtext(".//dc:language", "", namespaces),
+        record_source=record.findtext(".//dc:identifier", "", namespaces),
+    )
+
+    return book
+
+
+def dublincore2book(record: Element):
+    namespaces = {
+        "oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+        "dc": "http://purl.org/dc/elements/1.1/",
+    }
+
+    langghndf3 = (record.findtext(".//dc:language", "", namespaces),)
+    print(langghndf3[0])
+    language = babelfish.Language.fromalpha3b(langghndf3[0]).alpha2
+
+    book = BookCreate(
+        title=record.findtext(".//dc:title", "", namespaces),
+        abstract="",
+        publication_date=record.findtext(".//dc:date", "", namespaces),
+        publisher=record.findtext(".//dc:publisher", "", namespaces),
+        author=record.findtext(".//dc:creator", "", namespaces),
+        format=record.findtext(".//dc:format", "", namespaces),
+        language=language,
+        record_source=record.findtext(".//dc:identifier", "", namespaces),
+    )
+
+    return book
+
+
+async def isbn2book_bnf(isbn: int, format: str = "unimarcXchange") -> BookCreate | None:
+    """Query bnf SRU api to find a book record
     https://api.bnf.fr/api-sru-catalogue-general
     https://couverture.geobib.fr/
     https://github.com/hackathonBnF/hackathon2016/wiki/API-Couverture-Service
@@ -126,6 +181,9 @@ async def isbn2book_bnf(isbn) -> BookCreate | None:
     isbn : int
         ISBN to search
 
+    format : str
+        either "dublincore" or "unimarcXchange"
+
     Returns
     -------
     BookCreate or None
@@ -133,12 +191,10 @@ async def isbn2book_bnf(isbn) -> BookCreate | None:
     """
     async with httpx.AsyncClient() as client:
         r = await client.get(
-            f"https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.fuzzyISBN%20all%20%22{isbn}%22&recordSchema=dublincore&maximumRecords=100&startRecord=1"
+            f"https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.fuzzyISBN%20all%20%22{isbn}%22&recordSchema={format}&maximumRecords=100&startRecord=1"
         )
-        print(r.text)
 
         root = ET.fromstring(r.text)
-        print(root.tag)
 
         namespaces = {
             "srw": "http://www.loc.gov/zing/srw/",
@@ -147,9 +203,10 @@ async def isbn2book_bnf(isbn) -> BookCreate | None:
             "dc": "http://purl.org/dc/elements/1.1/",
         }
 
-        nb = root.find("srw:numberOfRecords", namespaces).text
-        print(f"found {nb} records")
+        nb = int(root.find("srw:numberOfRecords", namespaces).text)
+        # print(f"found {nb} records")
         if nb == 0:
+            print("BnF: not found")
             return None
 
         # idArk, l'identifiant ARK du document numérique
@@ -158,43 +215,36 @@ async def isbn2book_bnf(isbn) -> BookCreate | None:
         ).text
         print(recordIdentifier)
 
-        couv = await client.get(
-            f"http://catalogue.bnf.fr/couverture?&appName=NE&idArk={recordIdentifier}&couverture=1",
-            follow_redirects=True,
-        )
+        couv_url = f"https://catalogue.bnf.fr/couverture?&appName=NE&idArk={recordIdentifier}&couverture=1"
+
+        couv = await client.get(couv_url)
 
         print(f"Couverture status {couv.status_code}, url {couv.url}")
 
         im = Image.open(BytesIO(couv.content))
         print(im.format, im.size, im.mode)
+        if im.size == (92, 138):
+            print("default cover detected")
+            couv_url = None
 
         # recordData contain standart record format : unimarcXchange,dublincore
         for recordData in root.findall(
             "srw:records/srw:record/srw:recordData", namespaces
         ):
-            # dublincore format
-            title = recordData.findtext(".//dc:title", "", namespaces)
-            print(title)
+            if format == "dublincore":
+                book = dublincore2book(recordData)
+            elif format == "unimarcXchange":
+                book = unimarcxchange2book(recordData)
 
-            source = recordData.findtext(".//dc:identifier", "", namespaces)
-            print(source)
+            if book is not None:
+                book.cover = couv_url
+                return book
 
-            author = recordData.findtext(".//dc:creator", "", namespaces)
-            print(author)
-
-            publisher = recordData.findtext(".//dc:publisher", "", namespaces)
-            print(publisher)
-
-            format = recordData.findtext(".//dc:format", "", namespaces)
-            print(format)
-
-        return None
-
-    return book
+    return None
 
 
 async def isbn2book_googlebooks(isbn) -> BookCreate | None:
-    """Query Google book api to find a book notice
+    """Query Google book api to find a book record
 
     Parameters
     ----------
@@ -226,7 +276,7 @@ async def isbn2book_googlebooks(isbn) -> BookCreate | None:
         try:
             img = volume_info["imageLinks"]["thumbnail"]
         except KeyError:
-            img = ""
+            img = None
 
         book = BookCreate(
             title=volume_info.get("title", "") + " " + volume_info.get("subtitle", ""),
@@ -237,24 +287,126 @@ async def isbn2book_googlebooks(isbn) -> BookCreate | None:
             format=f"{volume_info.get('pageCount', '')}p.",
             language=volume_info.get("language", ""),
             isbn=isbn,
-            cover_url=img,
+            cover=img,
+            record_source=volume_info.get("canonicalVolumeLink", ""),
         )
 
     return book
 
 
+async def isbn2book_openlibrary(isbn):
+    """Query openlibrary api to find a book record
+
+    Parameters
+    ----------
+    isbn : int
+        ISBN to search
+
+    Returns
+    -------
+    BookCreate or None
+        Book if found
+    """
+    async with httpx.AsyncClient() as client:
+        r = await client.get(
+            f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True
+        )
+
+        if r.status_code == 404:
+            print("Open Library: not found")
+            return None
+
+        print(r.status_code, r.text)
+
+        volume_info = r.json()
+
+        if "covers" in volume_info:
+            img = (
+                f"https://covers.openlibrary.org/b/id/{volume_info["covers"][0]}-L.jpg"
+            )
+        else:
+            img = None
+
+        work_url = f'https://openlibrary.org{volume_info["works"][0]["key"]}.json'
+        print(work_url)
+
+        work_r = await client.get(work_url)
+        work = work_r.json()
+        print(work)
+
+        descirption = work.get("description", "")
+        if isinstance(descirption, dict):
+            abstract = descirption.get("value", "")
+        else:
+            abstract = work.get("description", "").split("\r")[0]
+
+        lang = volume_info["languages"][0]["key"].split("/")[2]
+        print(lang)
+
+        book = BookCreate(
+            title=volume_info.get("title", "") + " " + volume_info.get("subtitle", ""),
+            abstract=abstract,
+            publication_date=volume_info.get("publish_date", ""),
+            publisher=volume_info.get("publishers", "")[0],
+            author=work["authors"][0]["author"]["key"],
+            format=f"{volume_info.get('number_of_pages', '')}p.",
+            language=babelfish.Language(lang).alpha2,
+            isbn=isbn,
+            cover=img,
+            record_source=f"https://openlibrary.org/isbn/{isbn}",
+        )
+
+    return book
+
+
+async def openlibrarycover(isbn):
+    # We could also use isbn2book_openlibrary but seems lighter
+    async with httpx.AsyncClient() as client:
+        url = f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
+        r = await client.get(url, follow_redirects=True)
+
+        print(f"Open Library Covers API status {r.status_code}, url {r.url}")
+
+        if len(r.content) > 50:
+            return url
+
+        print("Default Open Library Cover detected")
+
+    return None
+
+
+# Get cover from google images?
+# https://www.googleapis.com/customsearch/v1?key={googleapikey}&cx={customsearchengineid}&searchType=image&q={isbn}
+# https://www.reddit.com/r/googlecloud/comments/126efns/is_the_google_images_api_still_available/?tl=fr
+# https://developers.google.com/custom-search/v1/introduction
+# https://programmablesearchengine.google.com/controlpanel/create
+# https://developers.google.com/custom-search/v1/using_rest
+# https://developers.google.com/custom-search/v1/reference/rest/v1/cse/list
+
+
 async def isbn2book(in_isbn: str) -> BookCreate | None:
-    isbn = clean_isbn(in_isbn)  # "978-2013944762"
+    isbn = canonical(in_isbn)  # "978-2013944762"
     if isbn == "" or not isbn.isdecimal():
         print("Invalid ISBN format")
         return None
 
-    book = await isbn2book_bnf(isbn)
+    # TODO : use unimarcXchange for abstract
+    book = await isbn2book_bnf(isbn, "dublincore")
 
-    # if book is None:
-    #     book = await isbn2book_googlebooks(isbn)
-    #
-    #     if book is None:
-    #         book = await isbn2book_sudoc(isbn)
+    if book is None:
+        book = await isbn2book_googlebooks(isbn)
+
+        if book is None:
+            book = await isbn2book_openlibrary(isbn)
+
+            if book is None:
+                book = await isbn2book_sudoc(isbn)
+
+    if book is not None:
+        if book.isbn is None:
+            book.isbn = isbn
+
+        if (book.cover is None) and ("openlibrary" not in book.record_source):
+            book.cover = await openlibrarycover(isbn)
 
     return book

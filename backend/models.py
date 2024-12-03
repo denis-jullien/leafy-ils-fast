@@ -63,6 +63,7 @@ class BookBase(SharedBase):
     isbn: Optional[PositiveInt] = None
     format: Optional[str] = None
     publication_date: Optional[str] = None
+    record_source: Optional[str] = None
 
 
 class BookTable(BookBase, table=True):
