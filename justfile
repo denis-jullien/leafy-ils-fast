@@ -22,6 +22,8 @@ docker-build:
 docker-run:
     docker run -p 8000:8000 leafy
 
+docker: docker-build docker-run
+
 ci:
     ruff format backend
     ruff check backend

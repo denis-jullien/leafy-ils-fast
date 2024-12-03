@@ -73,6 +73,6 @@ async def authenticated_route(user: User = Depends(current_active_user)):
 # Serve static frontend
 app.mount(
     "/",
-    StaticFiles(directory="../frontend/build", html=True, check_dir=False),
+    StaticFiles(directory="frontend/build", html=True, check_dir=False),
     name="sveltekit",
 )
