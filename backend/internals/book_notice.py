@@ -1,6 +1,7 @@
 from xml.etree.ElementTree import Element
 
 from backend.models import BookCreate
+from backend.config import Settings
 
 import xml.etree.ElementTree as ET
 from rdflib import Graph
@@ -9,7 +10,7 @@ import httpx
 from PIL import Image
 from io import BytesIO
 
-from isbnlib import canonical
+from isbnlib import ean13
 import babelfish
 
 # --- bnf saprql test
@@ -156,12 +157,21 @@ def dublincore2book(record: Element):
     print(langghndf3[0])
     language = babelfish.Language.fromalpha3b(langghndf3[0]).alpha2
 
+    title = record.findtext(".//dc:title", "", namespaces).split(" / ")
+
+    if len(title) > 1:
+        author = title[1].split(" ; ")[0]
+    else:
+        author = ""
+
+    publisher = record.findtext(".//dc:publisher", "", namespaces).split("(")[0]
+
     book = BookCreate(
-        title=record.findtext(".//dc:title", "", namespaces),
+        title=title[0],
         abstract="",
         publication_date=record.findtext(".//dc:date", "", namespaces),
-        publisher=record.findtext(".//dc:publisher", "", namespaces),
-        author=record.findtext(".//dc:creator", "", namespaces),
+        publisher=publisher,
+        author=author, #record.findtext(".//dc:creator", "", namespaces),
         format=record.findtext(".//dc:format", "", namespaces),
         language=language,
         record_source=record.findtext(".//dc:identifier", "", namespaces),
@@ -383,10 +393,33 @@ async def openlibrarycover(isbn):
 # https://developers.google.com/custom-search/v1/using_rest
 # https://developers.google.com/custom-search/v1/reference/rest/v1/cse/list
 
+async def googleimagescover(isbn, apikey:str, seachengine:str):
+    # We could also use isbn2book_openlibrary but seems lighter
+    async with httpx.AsyncClient() as client:
+        r = await client.get(
+            f"https://www.googleapis.com/customsearch/v1?key={apikey}"
+            f"&cx={seachengine}&searchType=image&fields=kind,items(title,link,mime,displayLink,image/height,image/width,image/byteSize)"
+            f"&num=10&q={isbn}"
+            f"&gl=fr" # Geolocalisation France
+        )
 
-async def isbn2book(in_isbn: str) -> BookCreate | None:
-    isbn = canonical(in_isbn)  # "978-2013944762"
-    if isbn == "" or not isbn.isdecimal():
+        print(f"Google image status {r.status_code}, url {r.url}")
+
+        if "items" in r.json():
+            imagessearch = r.json()["items"]
+            print(imagessearch)
+
+            for img in imagessearch:
+                if "http" in img["link"]:
+                    # TODO : test query image ?
+                    return img["link"]
+
+    return None
+
+
+async def isbn2book(in_isbn: str, settings: Settings) -> BookCreate | None:
+    isbn = ean13(in_isbn)  # "978-2013944762"
+    if isbn == '':
         print("Invalid ISBN format")
         return None
 
@@ -408,5 +441,10 @@ async def isbn2book(in_isbn: str) -> BookCreate | None:
 
         if (book.cover is None) and ("openlibrary" not in book.record_source):
             book.cover = await openlibrarycover(isbn)
+
+        if book.cover is None:
+            print(settings.google_custom_search_engine, settings.google_api_key)
+            book.cover = await googleimagescover(isbn, settings.google_api_key, settings.google_custom_search_engine)
+
 
     return book
