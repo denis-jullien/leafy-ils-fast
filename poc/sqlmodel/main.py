@@ -21,7 +21,6 @@ if __name__ == "__main__":
     leafy_database.start_database_engine()
     database_engine = leafy_database.get_database_engine()
 
-
     # Print table from database
     log_level = log_ref.get_logging_level()
     if log_level == logging.INFO or log_level == logging.DEBUG:
