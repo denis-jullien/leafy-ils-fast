@@ -1,7 +1,4 @@
-from os.path import split
 from xml.etree.ElementTree import Element
-
-from sqlalchemy import false
 
 from backend.models import BookCreate
 from backend.config import Settings
@@ -175,7 +172,7 @@ def dublincore2book(record: Element):
         abstract="",
         publication_date=record.findtext(".//dc:date", "", namespaces),
         publisher=publisher,
-        author=author, #record.findtext(".//dc:creator", "", namespaces),
+        author=author,  # record.findtext(".//dc:creator", "", namespaces),
         format=record.findtext(".//dc:format", "", namespaces),
         language=language,
         record_source=record.findtext(".//dc:identifier", "", namespaces),
@@ -256,6 +253,7 @@ async def isbn2book_bnf(isbn: int, format: str = "unimarcXchange") -> BookCreate
 
     return None
 
+
 async def isbn2book_banq(isbn: int) -> BookCreate | None:
     """Query banq.qc.ca  rss api to find a book record
 
@@ -270,36 +268,15 @@ async def isbn2book_banq(isbn: int) -> BookCreate | None:
         Book if found
     """
     async with httpx.AsyncClient() as client:
-
-        # headers: dict[str, Any] = {
-        #     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        #     "Accept-Language": "en-US,en;q=0.9",
-        #     "Accept-Encoding": "gzip, deflate, br",
-        #     "Cache-Control": "max-age=0",
-        #     "Connection": "keep-alive",
-        #     "Content-Type": "application/x-www-form-urlencoded",
-        #     "Host": "mybaragar.com",
-        #     "Origin": "https://mybaragar.com",
-        #     "Referer": "https://mybaragar.com/index.cfm?event=page.SchoolLocatorPublic&DistrictCode=BC45",
-        #     "sec-ch-ua": '"Not_A Brand";v="99", "Google Chrome";v="109", "Chromium";v="109"',
-        #     'sec-ch-ua-mobile': "?0",
-        #     "sec-ch-ua-platform": "Sec-Fetch-Dest",
-        #     "Sec-Fetch-Mode": "navigate",
-        #     "Sec-Fetch-Site": "same-origin",
-        #     "Sec-Fetch-User": '?1',
-        #     "Upgrade-Insecure-Requests": '1',
-        #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
-        # }
-
         headers = HeaderGenerator()()
 
         r = await client.get(
             f"https://cap.banq.qc.ca/in/rest/api/rss?q={isbn}&locale=fr",
-            headers= headers
+            headers=headers,
         )
 
         if r.status_code == 302:
-            print ("BAnQ doesn't like robots :(")
+            print("BAnQ doesn't like robots :(")
             return None
 
         try:
@@ -308,9 +285,7 @@ async def isbn2book_banq(isbn: int) -> BookCreate | None:
             print("BAnQ XML ParseError")
             return None
 
-        namespaces = {
-            "itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd"
-        }
+        namespaces = {"itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd"}
 
         item = root.find("channel/item", namespaces)
         if item is None:
@@ -339,7 +314,6 @@ async def isbn2book_banq(isbn: int) -> BookCreate | None:
         )
 
         return book
-
 
     return None
 
@@ -426,7 +400,6 @@ async def isbn2book_openlibrary(isbn):
         except httpx.ReadTimeout:
             return None
 
-
         if r.status_code == 404:
             print("Open Library: not found")
             return None
@@ -464,7 +437,7 @@ async def isbn2book_openlibrary(isbn):
         if "authors" in work:
             author = work["authors"][0]["author"]["key"]
         else:
-            author = ''
+            author = ""
 
         if "publishers" in volume_info:
             publisher = volume_info["publishers"][0]
@@ -514,14 +487,15 @@ async def openlibrarycover(isbn):
 # https://developers.google.com/custom-search/v1/using_rest
 # https://developers.google.com/custom-search/v1/reference/rest/v1/cse/list
 
-async def googleimagescover(isbn, apikey:str, seachengine:str):
+
+async def googleimagescover(isbn, apikey: str, seachengine: str):
     # We could also use isbn2book_openlibrary but seems lighter
     async with httpx.AsyncClient() as client:
         r = await client.get(
             f"https://www.googleapis.com/customsearch/v1?key={apikey}"
             f"&cx={seachengine}&searchType=image&fields=kind,items(title,link,mime,displayLink,image/height,image/width,image/byteSize)"
             f"&num=10&q={isbn}"
-            f"&gl=fr" # Geolocalisation France
+            f"&gl=fr"  # Geolocalisation France
         )
 
         print(f"Google image status {r.status_code}, url {r.url}")
@@ -540,7 +514,7 @@ async def googleimagescover(isbn, apikey:str, seachengine:str):
 
 async def isbn2book(in_isbn: str, settings: Settings) -> BookCreate | None:
     isbn = isbnlib.ean13(in_isbn)  # "978-2013944762"
-    if isbn == '':
+    if isbn == "":
         print("Invalid ISBN format")
         return None
 
@@ -570,7 +544,8 @@ async def isbn2book(in_isbn: str, settings: Settings) -> BookCreate | None:
             book.cover = await openlibrarycover(isbn)
 
         if book.cover is None:
-            book.cover = await googleimagescover(isbn, settings.google_api_key, settings.google_custom_search_engine)
-
+            book.cover = await googleimagescover(
+                isbn, settings.google_api_key, settings.google_custom_search_engine
+            )
 
     return book

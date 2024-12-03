@@ -12,6 +12,7 @@ from backend.users import (
 )
 from backend.models import User, UserCreate, UserRead, UserUpdate
 
+
 @asynccontextmanager
 async def startup(app: FastAPI):
     create_db_and_tables()

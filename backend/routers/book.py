@@ -25,10 +25,11 @@ def create_book(*, session: Session = Depends(get_session), book: BookCreate):
 
 @router.post("/{isbn}", response_model=BookPublic)
 async def create_book_isbn(
-        *,
-        session: Session = Depends(get_session),
-        settings: Annotated[Settings, Depends(get_settings)],
-        isbn: str):
+    *,
+    session: Session = Depends(get_session),
+    settings: Annotated[Settings, Depends(get_settings)],
+    isbn: str,
+):
     """
     Isbn for reference :\n
     978-2013944762
@@ -58,7 +59,7 @@ def read_books(
     *,
     session: Session = Depends(get_session),
     offset: int = 0,
-    limit: int = Query(default=100, le=100)
+    limit: int = Query(default=100, le=100),
 ):
     books = session.exec(select(BookTable).offset(offset).limit(limit)).all()
     return books
