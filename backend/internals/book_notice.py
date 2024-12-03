@@ -1,4 +1,7 @@
+from os.path import split
 from xml.etree.ElementTree import Element
+
+from sqlalchemy import false
 
 from backend.models import BookCreate
 from backend.config import Settings
@@ -10,8 +13,9 @@ import httpx
 from PIL import Image
 from io import BytesIO
 
-from isbnlib import ean13
+import isbnlib
 import babelfish
+from random_header_generator import HeaderGenerator
 
 # --- bnf saprql test
 # PREFIX rdarelationships: <http://rdvocab.info/RDARelationshipsWEMI/>
@@ -102,7 +106,7 @@ async def isbn2book_sudoc(isbn: int) -> BookCreate | None:
                 publisher=publisher,
                 author=author,
                 format=row.format,
-                language="fr",
+                language=isbn2language(isbn),
                 isbn=isbn,
                 record_source=row.book,
             )
@@ -252,6 +256,93 @@ async def isbn2book_bnf(isbn: int, format: str = "unimarcXchange") -> BookCreate
 
     return None
 
+async def isbn2book_banq(isbn: int) -> BookCreate | None:
+    """Query banq.qc.ca  rss api to find a book record
+
+    Parameters
+    ----------
+    isbn : int
+        ISBN to search
+
+    Returns
+    -------
+    BookCreate or None
+        Book if found
+    """
+    async with httpx.AsyncClient() as client:
+
+        # headers: dict[str, Any] = {
+        #     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        #     "Accept-Language": "en-US,en;q=0.9",
+        #     "Accept-Encoding": "gzip, deflate, br",
+        #     "Cache-Control": "max-age=0",
+        #     "Connection": "keep-alive",
+        #     "Content-Type": "application/x-www-form-urlencoded",
+        #     "Host": "mybaragar.com",
+        #     "Origin": "https://mybaragar.com",
+        #     "Referer": "https://mybaragar.com/index.cfm?event=page.SchoolLocatorPublic&DistrictCode=BC45",
+        #     "sec-ch-ua": '"Not_A Brand";v="99", "Google Chrome";v="109", "Chromium";v="109"',
+        #     'sec-ch-ua-mobile': "?0",
+        #     "sec-ch-ua-platform": "Sec-Fetch-Dest",
+        #     "Sec-Fetch-Mode": "navigate",
+        #     "Sec-Fetch-Site": "same-origin",
+        #     "Sec-Fetch-User": '?1',
+        #     "Upgrade-Insecure-Requests": '1',
+        #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+        # }
+
+        headers = HeaderGenerator()()
+
+        r = await client.get(
+            f"https://cap.banq.qc.ca/in/rest/api/rss?q={isbn}&locale=fr",
+            headers= headers
+        )
+
+        if r.status_code == 302:
+            print ("BAnQ doesn't like robots :(")
+            return None
+
+        try:
+            root = ET.fromstring(r.text)
+        except ET.ParseError:
+            print("BAnQ XML ParseError")
+            return None
+
+        namespaces = {
+            "itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd"
+        }
+
+        item = root.find("channel/item", namespaces)
+        if item is None:
+            return None
+
+        desc = item.findtext("description", "", namespaces).split("\n")
+        print(desc)
+
+        # try:
+        publication = desc[-3].split(", ")
+        publication_date = publication[1].strip(" []")
+        publisher = publication[0]
+        # except:
+        #     publication_date = None
+        #     publisher = None
+
+        book = BookCreate(
+            title=item.findtext("title", "", namespaces),
+            abstract="",
+            publication_date=publication_date,
+            publisher=publisher,
+            author=item.findtext("itunes:author", "", namespaces),
+            format=item.findtext("itunes:summary", "", namespaces),
+            language=isbn2language(isbn),
+            record_source=item.findtext("link", "", namespaces),
+        )
+
+        return book
+
+
+    return None
+
 
 async def isbn2book_googlebooks(isbn) -> BookCreate | None:
     """Query Google book api to find a book record
@@ -304,6 +395,16 @@ async def isbn2book_googlebooks(isbn) -> BookCreate | None:
     return book
 
 
+def isbn2language(isbn):
+    lang = isbnlib.info(isbn).split()[0]
+    # print(lang)
+    lang2 = [item.alpha2 for item in babelfish.LANGUAGE_MATRIX if item.name == lang]
+    if len(lang2) > 0:
+        return lang2[0]
+
+    return None
+
+
 async def isbn2book_openlibrary(isbn):
     """Query openlibrary api to find a book record
 
@@ -318,9 +419,13 @@ async def isbn2book_openlibrary(isbn):
         Book if found
     """
     async with httpx.AsyncClient() as client:
-        r = await client.get(
-            f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True
-        )
+        try:
+            r = await client.get(
+                f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True
+            )
+        except httpx.ReadTimeout:
+            return None
+
 
         if r.status_code == 404:
             print("Open Library: not found")
@@ -350,17 +455,30 @@ async def isbn2book_openlibrary(isbn):
         else:
             abstract = work.get("description", "").split("\r")[0]
 
-        lang = volume_info["languages"][0]["key"].split("/")[2]
-        print(lang)
+        if "languages" in volume_info:
+            lang = volume_info["languages"][0]["key"].split("/")[2]
+            language = babelfish.Language(lang).alpha2
+        else:
+            language = isbn2language(isbn)
+
+        if "authors" in work:
+            author = work["authors"][0]["author"]["key"]
+        else:
+            author = ''
+
+        if "publishers" in volume_info:
+            publisher = volume_info["publishers"][0]
+        else:
+            publisher = None
 
         book = BookCreate(
             title=volume_info.get("title", "") + " " + volume_info.get("subtitle", ""),
             abstract=abstract,
             publication_date=volume_info.get("publish_date", ""),
-            publisher=volume_info.get("publishers", "")[0],
-            author=work["authors"][0]["author"]["key"],
+            publisher=publisher,
+            author=author,
             format=f"{volume_info.get('number_of_pages', '')}p.",
-            language=babelfish.Language(lang).alpha2,
+            language=language,
             isbn=isbn,
             cover=img,
             record_source=f"https://openlibrary.org/isbn/{isbn}",
@@ -373,7 +491,10 @@ async def openlibrarycover(isbn):
     # We could also use isbn2book_openlibrary but seems lighter
     async with httpx.AsyncClient() as client:
         url = f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
-        r = await client.get(url, follow_redirects=True)
+        try:
+            r = await client.get(url, follow_redirects=True)
+        except httpx.ReadTimeout:
+            return None
 
         print(f"Open Library Covers API status {r.status_code}, url {r.url}")
 
@@ -410,7 +531,7 @@ async def googleimagescover(isbn, apikey:str, seachengine:str):
             print(imagessearch)
 
             for img in imagessearch:
-                if "http" in img["link"]:
+                if "http" in img["link"] and "no-image" not in img["link"]:
                     # TODO : test query image ?
                     return img["link"]
 
@@ -418,10 +539,12 @@ async def googleimagescover(isbn, apikey:str, seachengine:str):
 
 
 async def isbn2book(in_isbn: str, settings: Settings) -> BookCreate | None:
-    isbn = ean13(in_isbn)  # "978-2013944762"
+    isbn = isbnlib.ean13(in_isbn)  # "978-2013944762"
     if isbn == '':
         print("Invalid ISBN format")
         return None
+
+    openlibrarycovertested = False
 
     # TODO : use unimarcXchange for abstract
     book = await isbn2book_bnf(isbn, "dublincore")
@@ -431,19 +554,22 @@ async def isbn2book(in_isbn: str, settings: Settings) -> BookCreate | None:
 
         if book is None:
             book = await isbn2book_openlibrary(isbn)
+            openlibrarycovertested = True
 
             if book is None:
                 book = await isbn2book_sudoc(isbn)
+
+                if book is None:
+                    book = await isbn2book_banq(isbn)
 
     if book is not None:
         if book.isbn is None:
             book.isbn = isbn
 
-        if (book.cover is None) and ("openlibrary" not in book.record_source):
+        if (book.cover is None) and not openlibrarycovertested:
             book.cover = await openlibrarycover(isbn)
 
         if book.cover is None:
-            print(settings.google_custom_search_engine, settings.google_api_key)
             book.cover = await googleimagescover(isbn, settings.google_api_key, settings.google_custom_search_engine)
 
 
