@@ -404,7 +404,7 @@ async def isbn2book_openlibrary(isbn):
             print("Open Library: not found")
             return None
         elif r.status_code != 200:
-            print("Open Library: status",r.status_code, r.text)
+            print("Open Library: status", r.status_code, r.text)
             return None
 
         volume_info = r.json()
