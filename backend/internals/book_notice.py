@@ -53,7 +53,7 @@ async def isbn2book_sudoc(isbn: int) -> BookCreate | None:
 
         err = root.find("error")
         if err is not None:
-            print(f"return isbn2ppn Error : {err.text}")
+            print(f"Sudoc: isbn2ppn Error : {err.text}")
             return None
 
         x = root.find("query/resultNoHolding")
@@ -61,7 +61,7 @@ async def isbn2book_sudoc(isbn: int) -> BookCreate | None:
             x = root.find("query/result")
 
         ppn = x.find("ppn").text
-        print(f"Got PPN: {ppn}")
+        # print(f"Got PPN: {ppn}")
 
         r = await client.get(f"https://www.sudoc.fr/{ppn}.rdf")
         # print(r.text)
@@ -85,7 +85,7 @@ async def isbn2book_sudoc(isbn: int) -> BookCreate | None:
         qres = g.query(knows_query3)
         for row in qres:
             # debug(row)
-            print(f"{row.book} knows {row.title}")
+            # print(f"{row.book} knows {row.title}")
 
             title = row.title.split(" / ")
 
@@ -107,11 +107,9 @@ async def isbn2book_sudoc(isbn: int) -> BookCreate | None:
                 isbn=isbn,
                 record_source=row.book,
             )
-            break
+            return book
 
-        # debug(book)
-
-    return book
+    return None
 
 
 def unimarcxchange2book(record: Element):
@@ -227,16 +225,17 @@ async def isbn2book_bnf(isbn: int, format: str = "unimarcXchange") -> BookCreate
         print(recordIdentifier)
 
         couv_url = f"https://catalogue.bnf.fr/couverture?&appName=NE&idArk={recordIdentifier}&couverture=1"
-
         couv = await client.get(couv_url)
 
-        print(f"Couverture status {couv.status_code}, url {couv.url}")
-
-        im = Image.open(BytesIO(couv.content))
-        print(im.format, im.size, im.mode)
-        if im.size == (92, 138):
-            print("default cover detected")
+        if couv.status_code != 200:
+            print(f"Bnf: Couverture status {couv.status_code}, url {couv.url}")
             couv_url = None
+        else:
+            im = Image.open(BytesIO(couv.content))
+            # print(im.format, im.size, im.mode)
+            if im.size == (92, 138):
+                print("BnF: default cover detected")
+                couv_url = None
 
         # recordData contain standart record format : unimarcXchange,dublincore
         for recordData in root.findall(
@@ -398,13 +397,15 @@ async def isbn2book_openlibrary(isbn):
                 f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True
             )
         except httpx.ReadTimeout:
+            print("Open Library: timeout !!")
             return None
 
         if r.status_code == 404:
             print("Open Library: not found")
             return None
-
-        print(r.status_code, r.text)
+        elif r.status_code != 200:
+            print("Open Library: status",r.status_code, r.text)
+            return None
 
         volume_info = r.json()
 
@@ -416,11 +417,11 @@ async def isbn2book_openlibrary(isbn):
             img = None
 
         work_url = f'https://openlibrary.org{volume_info["works"][0]["key"]}.json'
-        print(work_url)
+        # print(work_url)
 
         work_r = await client.get(work_url)
         work = work_r.json()
-        print(work)
+        # print(work)
 
         descirption = work.get("description", "")
         if isinstance(descirption, dict):
@@ -467,16 +468,17 @@ async def openlibrarycover(isbn):
         try:
             r = await client.get(url, follow_redirects=True)
         except httpx.ReadTimeout:
+            print("Open Library: Covers API timeout")
             return None
 
-        print(f"Open Library Covers API status {r.status_code}, url {r.url}")
+        if r.status_code != 200:
+            print(f"Open Library: Covers API status {r.status_code}, url {r.url}")
 
-        if len(r.content) > 50:
-            return url
+        if len(r.content) < 50:
+            # print("Default Open Library Cover detected")
+            return None
 
-        print("Default Open Library Cover detected")
-
-    return None
+        return url
 
 
 # Get cover from google images?
@@ -498,11 +500,13 @@ async def googleimagescover(isbn, apikey: str, seachengine: str):
             f"&gl=fr"  # Geolocalisation France
         )
 
-        print(f"Google image status {r.status_code}, url {r.url}")
+        if r.status_code != 200:
+            print(f"Google image: error {r.status_code}, url {r.url} : {r.json()}")
+            return None
 
         if "items" in r.json():
             imagessearch = r.json()["items"]
-            print(imagessearch)
+            # print(imagessearch)
 
             for img in imagessearch:
                 if "http" in img["link"] and "no-image" not in img["link"]:

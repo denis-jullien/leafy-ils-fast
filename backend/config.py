@@ -14,4 +14,4 @@ class Settings(BaseSettings):
     google_api_key: str
     google_custom_search_engine: str
 
-    model_config = SettingsConfigDict(env_file="../.env")
+    model_config = SettingsConfigDict(env_file=".env")
