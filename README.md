@@ -30,7 +30,7 @@ Note: use a venv for python installation
 - unit tests
     - pip install -U pytest
     - pip install pytest-cov
-    - to launch tests: in poc/sqlmodel `pytest --cov=src --cov-report term-missing --cov-branch`
+    - to launch tests: in poc/sqlmodel `pytest --cov=. --cov-report term-missing --cov-branch unit_tests/test_family_create.py`
 
 ## Launcher
 
@@ -104,7 +104,7 @@ https://sqlmodel.tiangolo.com/tutorial/fastapi/session-with-dependency/
 
 https://sqlmodel.tiangolo.com/tutorial/fastapi/tests/
 
-## Scearch engine 
+## Scearch engine
 
 https://lab.abilian.com/Tech/Search/Comparison%20of%20open%20source%20search%20engines/
 https://supabase.com/blog/postgres-full-text-search-vs-the-rest

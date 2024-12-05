@@ -97,8 +97,7 @@ def test_read_updated_book(client: TestClient, init_data: dict, new_data: dict) 
 
     updated_data_expected = init_data
     for key, value in new_data.items():
-        if value is not None:
-            updated_data_expected[key] = value
+        updated_data_expected[key] = value
 
     response = client.get(f"/api/v1/books/{created_data_response["id"]}")
     assert response.status_code == 200

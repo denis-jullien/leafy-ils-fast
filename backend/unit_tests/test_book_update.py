@@ -62,8 +62,7 @@ def test_update_book(client: TestClient, init_data: dict, new_data: dict) -> Non
 
     data_expected = init_data
     for key, value in new_data.items():
-        if value is not None:
-            data_expected[key] = value
+        data_expected[key] = value
 
     data_response = response.json()
     assert "id" in data_response
