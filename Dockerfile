@@ -43,7 +43,7 @@ ADD fly-io-config/etc/litefs.yml /etc/litefs.yml
 RUN apk add bash fuse3 sqlite ca-certificates curl
 #RUN apk add ca-certificates fuse3 sqlite
 
-COPY --from=frontend-builder /app/frontend/build/ frontend/build/
+COPY --from=frontend-builder /app/frontend/build/ /app/frontend/build/
 
 COPY --from=builder /app/.venv /app/.venv/
 
@@ -51,5 +51,5 @@ COPY ./backend/ /app/backend/
 
 EXPOSE 8000
 
-CMD ["/app/.venv/bin/fastapi", "run", "backend/main.py"]
-#ENTRYPOINT litefs mount
+#CMD ["/app/.venv/bin/fastapi", "run", "backend/main.py"]
+ENTRYPOINT litefs mount

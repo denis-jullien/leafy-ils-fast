@@ -46,11 +46,8 @@
 	let scanpause = false;
 
 	async function doPost () {
-		const res = await fetch('http://127.0.0.1:8000/book/notice?in_isbn='+isbn, {
-			method: 'POST',
-			body: JSON.stringify({
-				isbn: isbn,
-			})
+		const res = await fetch('/api/v1/books/'+isbn, {
+			method: 'POST'
 		})
 
 		const json = <Book2>await res.json()
@@ -64,11 +61,8 @@
 
 	async function doPost2 (isbn:string) {
 		scanpause = true;
-		const res = await fetch('http://127.0.0.1:8000/book/notice?in_isbn='+isbn, {
-			method: 'POST',
-			body: JSON.stringify({
-				isbn: isbn,
-			})
+		const res = await fetch('/api/v1/books/'+isbn, {
+			method: 'POST'
 		})
 
 		const json = <Book2>await res.json()
