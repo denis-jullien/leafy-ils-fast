@@ -99,8 +99,8 @@ class BookUpdate(SharedUpdate):
 
 
 class FamilyBase(SharedBase):
-    email: Optional[str]
-    phone_number: Optional[str]
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
     # last_adhesion_date: Optional[date] = None
 
 
