@@ -18,7 +18,7 @@ from fastapi.testclient import TestClient
         },
     ],
 )
-def test_create_family(client: TestClient, data: dict) -> None:
+def test_create_member(client: TestClient, data: dict) -> None:
     family_data = {"email": "test_email", "phone_number": "phone_test"}
     response = client.post("/api/v1/families", json=family_data)
     assert response.status_code == 200
