@@ -6,8 +6,13 @@ from fastapi.testclient import TestClient
     "data",
     [
         {"borrowed_date": "2019-12-04", "book_id": 1, "member_id": 2},
-        {"borrowed_date": "2019-12-04", "book_id": 1, "member_id": 1, "returned_date": "2019-12-20"}
-    ]
+        {
+            "borrowed_date": "2019-12-04",
+            "book_id": 1,
+            "member_id": 1,
+            "returned_date": "2019-12-20",
+        },
+    ],
 )
 def test_create_circulation(client: TestClient, data: dict) -> None:
     # add family

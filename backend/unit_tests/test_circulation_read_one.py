@@ -13,7 +13,12 @@ def test_read_unknown_circulation(client: TestClient) -> None:
     "init_data",
     [
         {"borrowed_date": "2019-12-04", "book_id": 1, "member_id": 2},
-        {"borrowed_date": "2019-12-04", "book_id": 1, "member_id": 1, "returned_date": "2019-12-20"}
+        {
+            "borrowed_date": "2019-12-04",
+            "book_id": 1,
+            "member_id": 1,
+            "returned_date": "2019-12-20",
+        },
     ],
 )
 def test_read_created_circulation(client: TestClient, init_data: dict) -> None:
@@ -50,7 +55,12 @@ def test_read_created_circulation(client: TestClient, init_data: dict) -> None:
     "init_data",
     [
         {"borrowed_date": "2019-12-04", "book_id": 1, "member_id": 2},
-        {"borrowed_date": "2019-12-04", "book_id": 1, "member_id": 1, "returned_date": "2019-12-20"}
+        {
+            "borrowed_date": "2019-12-04",
+            "book_id": 1,
+            "member_id": 1,
+            "returned_date": "2019-12-20",
+        },
     ],
 )
 @pytest.mark.parametrize(
@@ -60,7 +70,12 @@ def test_read_created_circulation(client: TestClient, init_data: dict) -> None:
         {"book_id": 2},
         {"member_id": 1},
         {"returned_date": "2024-12-20"},
-        {"borrowed_date": "2022-12-04", "book_id": 1, "member_id": 1, "returned_date": "2030-12-20"},
+        {
+            "borrowed_date": "2022-12-04",
+            "book_id": 1,
+            "member_id": 1,
+            "returned_date": "2030-12-20",
+        },
         {},
     ],
 )

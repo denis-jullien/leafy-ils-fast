@@ -25,7 +25,12 @@ def test_read_all_circulation_with_pagination(client: TestClient) -> None:
     assert response.status_code == 200
     # add circulations
     circulation_list = list()
-    init_data = {"borrowed_date": "2022-12-04", "book_id": 1, "member_id": 1, "returned_date": "2030-12-20"}
+    init_data = {
+        "borrowed_date": "2022-12-04",
+        "book_id": 1,
+        "member_id": 1,
+        "returned_date": "2030-12-20",
+    }
     for _ in range(150):
         response = client.post("/api/v1/circulations", json=init_data)
         assert response.status_code == 200
