@@ -1,4 +1,6 @@
 <script lang="ts">
+	import '../../../admin.css';
+
 	import UnorderedList from 'carbon-components-svelte/src/UnorderedList/UnorderedList.svelte';
 	import LogoGithub from 'carbon-icons-svelte/lib/LogoGithub.svelte';
 	import { _ } from 'svelte-i18n';
@@ -14,7 +16,11 @@
 
 	import { InlineNotification } from 'carbon-components-svelte';
 	import { ButtonSet, InlineLoading } from 'carbon-components-svelte';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { Select, SelectItem } from "carbon-components-svelte";
+	import { ImageLoader } from "carbon-components-svelte";
+
+
 
 	import { initLocale } from '@orbitale/svelte-admin';
 	import { dashboard } from '$lib/Dashboard';
@@ -24,7 +30,10 @@
 
 	import QrCodeScanner from '$lib/QrCodeScanner.svelte';
 	import { Grid, Row, Column, Content, TileGroup, RadioTile } from 'carbon-components-svelte';
-	import type { BookCreate } from '$lib/apiTypes';
+	import type { BookCreate, BookPublic } from '$lib/apiTypes';
+
+
+
 
 	import {
 		ComposedModal,
@@ -36,6 +45,24 @@
 
 	import { ToastNotification } from 'carbon-components-svelte';
 	import { fade } from 'svelte/transition';
+
+	// import { continents, countries, languages } from 'countries-list'
+
+	import * as languages  from "@cospired/i18n-iso-languages"
+	import * as english from "@cospired/i18n-iso-languages/langs/en.json"
+	import * as french from "@cospired/i18n-iso-languages/langs/fr.json"
+
+	let langs = {}
+
+	onMount(() => {
+		// Support french & english languages.
+		languages.registerLocale(english);
+		languages.registerLocale(french);
+
+		langs = languages.getNames("fr")
+		console.log(langs)
+	})
+
 
 	let timeout = undefined;
 	$: showNotification = timeout !== undefined;
@@ -59,7 +86,7 @@
 	let result: Array<Book2> = [];
 	let scanpause = false;
 
-	let currentBook: BookCreate;
+	let currentBook: BookPublic = {};
 	let error = null;
 
 	let submitstate = 'dormant';
@@ -87,14 +114,29 @@
 
 			currentBook = json;
 			open = true;
+			submitstate = 'dormant';
 		} else {
-			submitstate = 'inactive';
+			submitstate = 'dormant';
 		}
+		isbn = '';
 	}
 
 	async function doCreate() {
 		console.log('Create new book');
+		const res = await fetch('/api/v1/books', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(currentBook)
+		});
+
+		const json = <BookPublic>await res.json();
+		console.log(json);
+
+		result = [json, ...result];
+		scanpause = false;
 	}
+
+
 
 	async function doPost2(isbn: string) {
 		scanpause = true;
@@ -118,6 +160,8 @@
 	let modalform;
 	let modalformbutton;
 	let formElement;
+
+
 </script>
 
 <svelte:component this={dashboard.theme.dashboard} {dashboard}>
@@ -256,13 +300,29 @@
 	</Content>
 </svelte:component>
 
-<ComposedModal bind:open on:submit={() => formElement.requestSubmit()} preventCloseOnClickOutside>
+<ComposedModal bind:open on:submit={() => formElement.requestSubmit()} preventCloseOnClickOutside size="lg">
 	<ModalHeader label="Changes" title="Confirm changes" />
 	<ModalBody hasForm>
+		<Grid fullWidth>
+			<Row>
+				<Column>
+
+		<div class="w-72 mx-auto	">
+		<ImageLoader
+			src={currentBook.cover}
+		>
+			<svelte:fragment slot="loading">
+				<InlineLoading />
+			</svelte:fragment>
+			<svelte:fragment slot="error">An error occurred.</svelte:fragment>
+		</ImageLoader>
+		</div>
+		</Column>
+				<Column>
 		<form
 			on:submit={() => {
-				open = false;
-				doCreate();
+				doCreate().then(value => {open = false})
+
 			}}
 			bind:this={formElement}
 		>
@@ -300,9 +360,46 @@
 						placeholder="Enter user name..."
 						required
 					/>
+
+					<TextInput
+						bind:value={currentBook.publication_date}
+						labelText="publication_date"
+						placeholder="Enter user name..."
+						required
+					/>
+
+					<TextInput
+						bind:value={currentBook.cover}
+						labelText="couverture"
+						placeholder="Enter user name..."
+					/>
+
+					<Select
+						labelText="language"
+						bind:selected={currentBook.language}
+					>
+						{#each Object.entries(langs) as [title, paragraph]}
+						<SelectItem value="{title}" text="{paragraph}" />
+						{/each}
+						<SelectItem value="g10" text="Gray 10" />
+						<SelectItem value="g80" text="Gray 80" />
+						<SelectItem value="g90" text="Gray 90" />
+						<SelectItem value="g100" text="Gray 100" />
+					</Select>
+
+					<TextInput
+						bind:value={currentBook.isbn}
+						labelText="isbn"
+						disabled
+					/>
+
+
 				{/if}
 			</FormGroup>
 		</form>
+				</Column>
+			</Row>
+		</Grid>
 	</ModalBody>
 	<ModalFooter
 		primaryButtonText="Proceed"

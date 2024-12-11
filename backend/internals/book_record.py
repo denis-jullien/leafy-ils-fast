@@ -199,9 +199,13 @@ async def isbn2book_bnf(isbn: int, format: str = "unimarcXchange") -> BookCreate
         Book if found
     """
     async with httpx.AsyncClient() as client:
-        r = await client.get(
-            f"https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.fuzzyISBN%20all%20%22{isbn}%22&recordSchema={format}&maximumRecords=100&startRecord=1"
-        )
+        try:
+            r = await client.get(
+                f"https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.fuzzyISBN%20all%20%22{isbn}%22&recordSchema={format}&maximumRecords=100&startRecord=1"
+            )
+        except httpx.ConnectTimeout:
+            print("BnF: timeout")
+            return None
 
         root = ET.fromstring(r.text)
 
@@ -468,6 +472,10 @@ async def openlibrarycover(isbn):
         try:
             r = await client.get(url, follow_redirects=True)
         except httpx.ReadTimeout:
+            print("Open Library: Covers API timeout")
+            return None
+
+        except httpx.ConnectTimeout:
             print("Open Library: Covers API timeout")
             return None
 
