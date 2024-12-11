@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
-from typing_extensions import Annotated
-from backend.config import get_settings, Settings
 
 from backend.database import get_session
 from backend.models import BookTable, BookPublic, BookCreate, BookUpdate
-from backend.internals.book_notice import isbn2book
 
 
 router = APIRouter(
@@ -16,37 +13,6 @@ router = APIRouter(
 
 @router.post("", response_model=BookPublic)
 def create_book(*, session: Session = Depends(get_session), book: BookCreate):
-    db_data = BookTable.model_validate(book)
-    session.add(db_data)
-    session.commit()
-    session.refresh(db_data)
-    return db_data
-
-
-@router.post("/{isbn}", response_model=BookPublic)
-async def create_book_isbn(
-    *,
-    session: Session = Depends(get_session),
-    settings: Annotated[Settings, Depends(get_settings)],
-    isbn: str,
-):
-    """
-    Isbn for reference :\n
-    978-2013944762
-    9782253067900
-    9782377940820
-    9782070438617
-    9780738531366
-    9782253072980
-    9781632658128
-    9782361934996
-    9782815310253
-    """
-    book = await isbn2book(isbn, settings)
-
-    if book is None:
-        raise HTTPException(status_code=400, detail="Item not found")
-
     db_data = BookTable.model_validate(book)
     session.add(db_data)
     session.commit()

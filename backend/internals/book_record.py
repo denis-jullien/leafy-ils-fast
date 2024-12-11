@@ -547,7 +547,7 @@ async def isbn2book(in_isbn: str, settings: Settings) -> BookCreate | None:
         if (book.cover is None) and not openlibrarycovertested:
             book.cover = await openlibrarycover(isbn)
 
-        if book.cover is None:
+        if book.cover is None and settings.google_api_key is not None and settings.google_custom_search_engine is not None:
             book.cover = await googleimagescover(
                 isbn, settings.google_api_key, settings.google_custom_search_engine
             )
