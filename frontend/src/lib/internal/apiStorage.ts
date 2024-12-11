@@ -25,15 +25,14 @@ export class MyApiInterface<T extends Entity> implements InternalApiInterface<T>
 		}
 
 		// const found = this.all().filter((b) => b.id.toString() === id.toString());
-		const response = await fetch(this.objectBaseUrl +'/' +id.toString());
+		const response = await fetch(this.objectBaseUrl + '/' + id.toString());
 		// Watch : If a object as a null value, could cause problem with crud CallbackStateProvider
-
 
 		if (response.status !== 200) {
 			throw new Error(`Object of type "${this.objectBaseUrl}" with id "${id}" was not found.`);
 		}
 
-		return response.json()
+		return response.json();
 	}
 
 	public remove(id: string | number): void {
@@ -57,7 +56,7 @@ export class MyApiInterface<T extends Entity> implements InternalApiInterface<T>
 		// }
 		//
 		// this.saveList([...this.all(), object]);
-		alert("add")
+		alert('add');
 	}
 
 	public update(object: T): void {
@@ -76,6 +75,6 @@ export class MyApiInterface<T extends Entity> implements InternalApiInterface<T>
 
 		const response = await fetch('/api/v1/books');
 		// Watch : If a object as a null value, could cause problem with crud CallbackStateProvider
-		return response.json()
+		return response.json();
 	}
 }

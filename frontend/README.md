@@ -22,7 +22,7 @@ pip install pydantic-extra-types
 npm i json-schema-to-typescript
 
 pydantic2ts --module ./app/books.py --output ./frontend/src/lib/apiTypes.ts
-pydantic2ts --module ./backend/models.py --exclude SQLModelBaseUserDB --exclude User --output ./frontend/src/lib/apiTypes.ts 
+pydantic2ts --module ./backend/models.py --exclude SQLModelBaseUserDB --exclude User --output ./frontend/src/lib/apiTypes.ts
 ```
 
 ## Creating a project

@@ -1,15 +1,16 @@
 <script lang="ts">
-
 </script>
 
-<aside class="flex flex-col items-center  sticky top-0 overflow-y-auto space-y-4 w-72 py-6 px-4 bg-base-200 rounded-box">
+<aside
+	class="flex flex-col items-center sticky top-0 overflow-y-auto space-y-4 w-72 py-6 px-4 bg-base-200 rounded-box"
+>
 	<!-- Logo -->
 	<a class="btn btn-ghost text-lg">
-		<img alt="Logo" src="/images/logo.svg" class="w-6"/>
+		<img alt="Logo" src="/images/logo.svg" class="w-6" />
 		Company Name
 	</a>
 
-	<img alt="Profile" src="/images/avatar.png" class="w-32 rounded-full"/>
+	<img alt="Profile" src="/images/avatar.png" class="w-32 rounded-full" />
 
 	<h2 class="font-bold text-lg">User name</h2>
 
@@ -54,15 +55,13 @@
 
 	<!-- Body -->
 	<div class="flex flex-col gap-2">
-		<a class="text-xl font-bold link">
-			Accessibility tools for designers and developers
-		</a>
+		<a class="text-xl font-bold link"> Accessibility tools for designers and developers </a>
 
 		<span>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tempora expedita dicta totam
-            aspernatur doloremque. Excepturi iste iusto eos enim reprehenderit nisi, accusamus
-            delectus nihil quis facere in modi ratione libero!
-        </span>
+			Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tempora expedita dicta totam
+			aspernatur doloremque. Excepturi iste iusto eos enim reprehenderit nisi, accusamus delectus
+			nihil quis facere in modi ratione libero!
+		</span>
 	</div>
 
 	<!-- Footer -->

@@ -16,13 +16,14 @@ import {
 	TextFilter,
 	type RequestParameters,
 	UrlAction,
-	View, NumberField
+	View,
+	NumberField
 } from '@orbitale/svelte-admin';
 
 import { faker } from '@faker-js/faker';
 
 import Pen from 'carbon-icons-svelte/lib/Pen.svelte';
-import Flash from "carbon-icons-svelte/lib/Flash.svelte";
+import Flash from 'carbon-icons-svelte/lib/Flash.svelte';
 import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
 import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
 import { type Book, getStorage } from './internal/booksInternal';
@@ -74,9 +75,8 @@ export const bookCrud = new CrudDefinition<Book>({
 						},
 						{ buttonKind: 'ghost' }
 					),
-					new UrlAction('Quick Add', '/admin/newbook', Flash,  {buttonKind: 'danger-tertiary'}),
-					new UrlAction('New', '/admin/books/new', Pen),
-
+					new UrlAction('Quick Add', '/admin/newbook', Flash, { buttonKind: 'danger-tertiary' }),
+					new UrlAction('New', '/admin/books/new', Pen)
 				],
 				pagination: {
 					enabled: true,
@@ -141,10 +141,6 @@ export const bookCrud = new CrudDefinition<Book>({
 
 			let entities = getStorage().all();
 
-
-
-
-
 			const filters = requestParameters.filters;
 			if (filters) {
 				entities = entities.filter((entity) => {
@@ -159,8 +155,8 @@ export const bookCrud = new CrudDefinition<Book>({
 					}
 					if (filters.publishedAt) {
 						const publishedAtFilter = filters.publishedAt as unknown as [
-								string | undefined,
-								string | undefined
+							string | undefined,
+							string | undefined
 						];
 						if (
 							publishedAtFilter[0] &&

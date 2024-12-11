@@ -52,8 +52,6 @@ import Flash from 'carbon-icons-svelte/lib/Flash.svelte';
 // 	id: number | string;
 // }
 
-
-
 const fields = [
 	new TextField('title', 'Title', { placeholder: "Enter the book's title", sortable: true }),
 	new TextareaField('abstract', 'Abstract', {
@@ -61,7 +59,10 @@ const fields = [
 		help: "Please don't make a summary of the book, remember to not spoil your readers!"
 	}),
 	new TextField('author', 'Author', { placeholder: "Enter the book's author", sortable: true }),
-	new TextField('publisher', 'Publisher', { placeholder: "Enter the book's publisher", sortable: true }),
+	new TextField('publisher', 'Publisher', {
+		placeholder: "Enter the book's publisher",
+		sortable: true
+	}),
 	new NumberField('isbn', 'ISBN')
 ];
 
@@ -78,7 +79,7 @@ async function getBooks(): Promise<Array<BookPublic>> {
 
 	const response = await fetch('/api/v1/books');
 	// Watch : If a object as a null value, could cause problem with crud CallbackStateProvider
-	let items = <Array<BookPublic>> await response.json()
+	let items = <Array<BookPublic>>await response.json();
 
 	return items;
 	// return items.map((value, index, array): Book2 => (
@@ -104,9 +105,9 @@ async function getoneBooks(book_id): Promise<BookPublic> {
 		return <BookPublic>{};
 	}
 
-	const response = await fetch('/api/v1/books/'+book_id);
+	const response = await fetch('/api/v1/books/' + book_id);
 	// Watch : If a object as a null value, could cause problem with crud CallbackStateProvider
-	return await response.json()
+	return await response.json();
 }
 
 function truncate(str: string, n: number, useWordBoundary: boolean = true) {
@@ -114,9 +115,7 @@ function truncate(str: string, n: number, useWordBoundary: boolean = true) {
 		return str;
 	}
 	const subString = str.slice(0, n - 1); // the original check
-	return (
-		(useWordBoundary ? subString.slice(0, subString.lastIndexOf(' ')) : subString) + ' ...'
-	);
+	return (useWordBoundary ? subString.slice(0, subString.lastIndexOf(' ')) : subString) + ' ...';
 }
 
 // Note: these fields can of course change based on different pages/actions,
@@ -126,7 +125,7 @@ function truncate(str: string, n: number, useWordBoundary: boolean = true) {
 export const bookCrud2 = new CrudDefinition<BookPublic>({
 	name: 'books2',
 	label: { singular: 'Book', plural: 'Books' },
-	 minStateLoadingTimeMs: 100,
+	minStateLoadingTimeMs: 100,
 
 	operations: [
 		new List(
@@ -137,10 +136,10 @@ export const bookCrud2 = new CrudDefinition<BookPublic>({
 			],
 			{
 				globalActions: [
-					new UrlAction('Quick Add', '/admin/newbook', Flash,  {buttonKind: 'danger-tertiary'}),
-					new UrlAction('New', '/admin/books2/new', Pen),
-				],
-				}
+					new UrlAction('Quick Add', '/admin/newbook', Flash, { buttonKind: 'danger-tertiary' }),
+					new UrlAction('New', '/admin/books2/new', Pen)
+				]
+			}
 		),
 		new View([...fields]),
 		new New(fields),
@@ -161,22 +160,29 @@ export const bookCrud2 = new CrudDefinition<BookPublic>({
 			return Promise.resolve();
 		}
 
-		if (operation.name === 'edit'){
+		if (operation.name === 'edit') {
 			const entity = data as BookPublic;
 			entity.id = (requestParameters.id || '').toString();
 			bookApi.update(entity);
-			Object.defineProperty(document, "referrer", {get : function(){ return "/admin/books2/list"; }});
+			Object.defineProperty(document, 'referrer', {
+				get: function () {
+					return '/admin/books2/list';
+				}
+			});
 
 			return Promise.resolve();
 		}
 
-
 		if (operation.name === 'new') {
-				const entity = data as BookPublic;
-				bookApi.add(entity);
-				Object.defineProperty(document, "referrer", {get : function(){ return "/admin/books2/list"; }});
+			const entity = data as BookPublic;
+			bookApi.add(entity);
+			Object.defineProperty(document, 'referrer', {
+				get: function () {
+					return '/admin/books2/list';
+				}
+			});
 
-				return Promise.resolve();
+			return Promise.resolve();
 		}
 
 		console.error('StateProcessor error: Unsupported Books Crud action "' + operation.name + '".');
@@ -203,13 +209,13 @@ export const bookCrud2 = new CrudDefinition<BookPublic>({
 			// Reduce abstact lenght
 			entities.forEach((book) => {
 				// book.cover = book.cover || "null"
-				Object.keys(book).forEach(function(key) {
-					if(book[key] === null) {
+				Object.keys(book).forEach(function (key) {
+					if (book[key] === null) {
 						book[key] = '-';
 					}
-				})
+				});
 				book.abstract = truncate(book.abstract, 200);
-			})
+			});
 
 			const listEntities = entities.slice(itemsPerPage * (page - 1), itemsPerPage * page);
 

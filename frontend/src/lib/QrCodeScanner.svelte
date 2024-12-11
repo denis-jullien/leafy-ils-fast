@@ -7,7 +7,7 @@
 		type Html5QrcodeResult,
 		Html5QrcodeScanType,
 		Html5QrcodeSupportedFormats,
-		Html5QrcodeScannerState,
+		Html5QrcodeScannerState
 	} from 'html5-qrcode';
 
 	export let width: number;
@@ -38,7 +38,7 @@
 				qrbox: { width, height },
 				aspectRatio: 1,
 				supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-				formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13],
+				formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13]
 			},
 			false // non-verbose
 		);
@@ -57,27 +57,6 @@
 </script>
 
 <div id="qr-scanner" class={$$props.class} />
-
-<style>
-    /* Hide unwanted icons */
-    #qr-scanner :global(img[alt='Info icon']),
-    #qr-scanner :global(img[alt='Camera based scan']) {
-        display: none;
-    }
-
-    /* Change camera permission button text */
-    #qr-scanner :global(#html5-qrcode-button-camera-permission) {
-        visibility: hidden;
-    }
-    #qr-scanner :global(#html5-qrcode-button-camera-permission::after) {
-        position: absolute;
-        inset: auto 0 0;
-        display: block;
-        content: 'Allow camera access';
-        visibility: visible;
-        padding: 10px 0;
-    }
-</style>
 
 <!--<script lang="ts">-->
 <!--	import { onMount } from 'svelte';-->
@@ -140,3 +119,24 @@
 <!--        padding: 10px 0;-->
 <!--    }-->
 <!--</style>-->
+
+<style>
+	/* Hide unwanted icons */
+	#qr-scanner :global(img[alt='Info icon']),
+	#qr-scanner :global(img[alt='Camera based scan']) {
+		display: none;
+	}
+
+	/* Change camera permission button text */
+	#qr-scanner :global(#html5-qrcode-button-camera-permission) {
+		visibility: hidden;
+	}
+	#qr-scanner :global(#html5-qrcode-button-camera-permission::after) {
+		position: absolute;
+		inset: auto 0 0;
+		display: block;
+		content: 'Allow camera access';
+		visibility: visible;
+		padding: 10px 0;
+	}
+</style>

@@ -40,7 +40,7 @@ which is exactly what we expect when the current web page actually changes!
 -->
 {#key $page}
 	<svelte:component
-		this="{dashboard.theme.dashboard}"
+		this={dashboard.theme.dashboard}
 		{dashboard}
 		{crud}
 		{operation}

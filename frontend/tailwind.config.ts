@@ -7,18 +7,15 @@ export default {
 	content: [
 		'./src/**/*.{html,js,svelte,ts}',
 		//👇 add Sara UI
-		"./node_modules/saraui/**/*.{html,js,svelte,ts}",
+		'./node_modules/saraui/**/*.{html,js,svelte,ts}'
 	],
 
 	theme: {
 		extend: {}
 	},
 
-	plugins: [
-		typography, forms,
-		require("daisyui"),
-	],
+	plugins: [typography, forms, require('daisyui')],
 	daisyui: {
-		themes: ["emerald"],
-	},
+		themes: ['emerald']
+	}
 } satisfies Config;

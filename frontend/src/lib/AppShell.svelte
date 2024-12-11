@@ -1,48 +1,44 @@
-<script lang='ts'>
+<script lang="ts">
 	import '../app.css';
 
-	import '@fortawesome/fontawesome-free/css/all.min.css'
+	import '@fortawesome/fontawesome-free/css/all.min.css';
 
-	import { SaraProvider } from "saraui"
+	import { SaraProvider } from 'saraui';
 </script>
 
 <SaraProvider>
 	<!-- minimun height of full screen-->
 	<div class="flex flex-col h-screen justify-between">
-
-		<div id="navbar" class="py-4 w-11/12 mx-auto" >
-
+		<div id="navbar" class="py-4 w-11/12 mx-auto">
 			<div class="flex flex-col">
 				<!-- Top navbar (always visible) -->
 				<nav class="navbar justify-between gap-4 bg-base-100 no-animation">
 					<!-- Logo -->
 					<a class="btn btn-ghost text-lg" href="/">
-						<img alt="Logo" src="/images/logo.svg" class="w-8"/>
+						<img alt="Logo" src="/images/logo.svg" class="w-8" />
 						Leafy ILS
 					</a>
 
 					<!-- Search -->
 					<div class="join w-full max-w-xl hidden sm:inline-flex">
 						<!-- Search options -->
-						<select class="select  select-bordered join-item">
+						<select class="select select-bordered join-item">
 							<option selected>Good potions</option>
 							<option>Bad potions</option>
 							<option>Illegal potions</option>
 						</select>
 
 						<!-- Search input -->
-						<input class="join-item input  input-bordered w-full" type="text" placeholder="Search">
+						<input class="join-item input input-bordered w-full" type="text" placeholder="Search" />
 
 						<!-- Search button -->
-						<button class="join-item btn  btn-primary text-success-content">
+						<button class="join-item btn btn-primary text-success-content">
 							<i class="fa fa-search" aria-hidden="true"></i>
 						</button>
 					</div>
 
 					<!-- Menu (Desktop) -->
 					<div class="shrink-0 hidden md:flex gap-2">
-
-
 						<a class="btn btn-md btn-ghost" href="">Create Book</a>
 						<a class="btn btn-md btn-secondary" href="/admin" data-sveltekit-reload>Admin</a>
 						<a class="btn btn-md btn-primary" href="/login">
@@ -57,7 +53,10 @@
 							<i class="fa-solid fa-bars text-lg"></i>
 						</button>
 
-						<ul tabindex="0" class="dropdown-content menu z-[1] bg-base-200 p-4 rounded-box shadow w-56 gap-2">
+						<ul
+							tabindex="0"
+							class="dropdown-content menu z-[1] bg-base-200 p-4 rounded-box shadow w-56 gap-2"
+						>
 							<li><a>Create Account</a></li>
 							<a class="btn btn-primary btn-sm">
 								Log in
@@ -79,7 +78,11 @@
 						</select>
 
 						<!-- Search input -->
-						<input class="join-item input input-sm input-bordered w-full" type="text" placeholder="Search">
+						<input
+							class="join-item input input-sm input-bordered w-full"
+							type="text"
+							placeholder="Search"
+						/>
 
 						<!-- Search button -->
 						<button class="join-item btn btn-sm btn-primary text-success-content">
@@ -95,7 +98,6 @@
 		</div>
 
 		<footer class="p-10 mt-10 sticky top-[100vh] bg-base-200 text-base-content text-base rounded">
-
 			<!-- Link grid -->
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 				<nav class="flex flex-col">
@@ -119,10 +121,7 @@
 				<nav>
 					<div class="flex flex-col">
 						<h3 class="text-lg footer-title">Resources</h3>
-						dgqdsfgsdfgsdfgdqsfghsgfhgfjhh
-						hhsgfhdg
-						sgfdhgfh
-						sgfh
+						dgqdsfgsdfgsdfgdqsfghsgfhgfjhh hhsgfhdg sgfdhgfh sgfh
 					</div>
 				</nav>
 				<nav>
@@ -141,7 +140,6 @@
 
 			<!-- Bottom bar -->
 			<aside class="flex flex-col sm:flex-row gap-6 justify-center sm:justify-between items-center">
-
 				<!-- Brand -->
 				<div class="flex items-center gap-4">
 					<img alt="Logo" src="/images/logo.svg" class="w-8" />
