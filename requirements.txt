@@ -16,3 +16,4 @@ pillow~=11.0.0
 pydantic-settings~=2.6.1
 python-dotenv~=1.0.1
 random_header_generator~=1.2
+fastapi-mail~=1.4.2

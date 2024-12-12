@@ -17,6 +17,8 @@ from backend.models import User
 from backend.database import get_session
 from sqlmodel import Session
 
+from backend.internals.emails import send_with_template, EmailSchema
+
 SECRET = "SECRET"
 
 
@@ -35,6 +37,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         self, user: User, token: str, request: Optional[Request] = None
     ):
         print(f"User {user.id} has forgot their password. Reset token: {token}")
+        await send_with_template(EmailSchema(email=["plop@plo.com"], body={}))
 
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
