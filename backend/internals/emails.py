@@ -1,5 +1,7 @@
+from http.cookiejar import debug
 from pathlib import Path
 
+from devtools import debug
 from fastapi import Depends
 from starlette.responses import JSONResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
@@ -42,4 +44,7 @@ async def send_with_template(email: EmailSchema):
         )
 
     fm = FastMail(conf())
-    await fm.send_message(message, template_name="email_template.html")
+    with fm.record_messages() as outbox:
+        await fm.send_message(message, template_name="email_template.html")
+        mail = outbox[0]
+        debug(outbox)
