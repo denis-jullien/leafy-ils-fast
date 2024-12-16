@@ -28,4 +28,5 @@ def test_delete_circulation(client: TestClient) -> None:
     data_response = response.json()
 
     response = client.delete(f"/api/v1/circulations/{data_response["id"]}")
-    assert response.status_code == 200
+    assert response.status_code == 204
+    assert response.content == b""

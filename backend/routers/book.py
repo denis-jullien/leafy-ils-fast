@@ -88,11 +88,11 @@ def update_book(
     return db_book
 
 
-@router.delete("/{book_id}")
+@router.delete("/{book_id}", status_code=204)
 def delete_book(*, session: Session = Depends(get_session), book_id: int):
     book = session.get(BookTable, book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
     session.delete(book)
     session.commit()
-    return {"ok": True}
+    return

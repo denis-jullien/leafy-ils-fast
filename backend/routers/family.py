@@ -59,11 +59,11 @@ def update_family(
     return db_family
 
 
-@router.delete("/{family_id}")
+@router.delete("/{family_id}", status_code=204)
 def delete_family(*, session: Session = Depends(get_session), family_id: int):
     family = session.get(FamilyTable, family_id)
     if not family:
         raise HTTPException(status_code=404, detail="Family not found")
     session.delete(family)
     session.commit()
-    return {"ok": True}
+    return

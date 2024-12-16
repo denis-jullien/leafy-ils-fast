@@ -66,11 +66,11 @@ def update_circulation(
     return db_circulation
 
 
-@router.delete("/{circulation_id}")
+@router.delete("/{circulation_id}", status_code=204)
 def delete_circulation(*, session: Session = Depends(get_session), circulation_id: int):
     circulation = session.get(CirculationTable, circulation_id)
     if not circulation:
         raise HTTPException(status_code=404, detail="Circulation not found")
     session.delete(circulation)
     session.commit()
-    return {"ok": True}
+    return
