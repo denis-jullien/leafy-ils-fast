@@ -58,9 +58,10 @@ async def create_book_isbn(
 def read_books(
     *,
     session: Session = Depends(get_session),
-    offset: int = 0,
-    limit: int = Query(default=100, le=100),
+    page: int = Query(default=1, gt=0),
+    limit: int = Query(default=100, le=100, gt=0),
 ):
+    offset = page * limit - limit
     books = session.exec(select(BookTable).offset(offset).limit(limit)).all()
     return books
 

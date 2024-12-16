@@ -29,9 +29,10 @@ def create_family(*, session: Session = Depends(get_session), family: FamilyCrea
 def read_families(
     *,
     session: Session = Depends(get_session),
-    offset: int = 0,
-    limit: int = Query(default=100, le=100),
+    page: int = Query(default=1, gt=0),
+    limit: int = Query(default=100, le=100, gt=0),
 ):
+    offset = page * limit - limit
     families = session.exec(select(FamilyTable).offset(offset).limit(limit)).all()
     return families
 
