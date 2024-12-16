@@ -39,7 +39,7 @@ The pagination will be manage as following:
         - e.g., `?sort=+name`
     4. `filter` (optional): applies filters to refine results
         - e.g., `?filter[archived]=false`
-    5. date filtering: allows filtering by date ranges
+    5. date filtering (optional): allows filtering by date ranges
         - exact parameters will depends of the API research possibilities
         - format expected:
             - `start_<date_parameter>`: filter results from this date
