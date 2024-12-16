@@ -39,17 +39,17 @@ def test_read_all_circulation_with_pagination(client: TestClient) -> None:
         circulation_list.append(response.json())
 
     # first page
-    # Get All circulations with offset default: 0 and limit default: 100
-    limit = 100
+    # Get All circulations with offset default: 0 and limit default: 20
+    limit = 20
     response = client.get("/api/v1/circulations")
     assert response.status_code == 200
     data_response = response.json()
     assert len(data_response) == limit
     for circulation in circulation_list[0:limit]:
         assert circulation in data_response
-    # Get All books with page: 1 and limit: 100
+    # Get All books with page: 1 and limit: 20
     page = 1
-    limit = 100
+    limit = 20
     response = client.get(f"/api/v1/circulations?page={page}&limit={limit}")
     assert response.status_code == 200
     data_response = response.json()

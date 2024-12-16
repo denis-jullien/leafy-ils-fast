@@ -32,7 +32,7 @@ def read_circulations(
     *,
     session: Session = Depends(get_session),
     page: int = Query(default=1, gt=0),
-    limit: int = Query(default=100, le=100, gt=0),
+    limit: int = Query(default=20, le=100, gt=0),
 ):
     offset = page * limit - limit
     circulations = session.exec(

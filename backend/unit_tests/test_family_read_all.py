@@ -18,17 +18,17 @@ def test_read_all_family_with_pagination(client: TestClient) -> None:
         assert response.status_code == 200
         family_list.append(response.json())
 
-    # Get All families with offset default: 0 and limit default: 100
-    limit = 100
+    # Get All families with offset default: 0 and limit default: 20
+    limit = 20
     response = client.get("/api/v1/families")
     assert response.status_code == 200
     data_response = response.json()
     assert len(data_response) == limit
     for family in family_list[0:limit]:
         assert family in data_response
-    # Get All families with page: 1 and limit: 100
+    # Get All families with page: 1 and limit: 20
     page = 1
-    limit = 100
+    limit = 20
     response = client.get(f"/api/v1/families?page={page}&limit={limit}")
     assert response.status_code == 200
     data_response = response.json()

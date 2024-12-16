@@ -32,17 +32,17 @@ def test_read_all_book_with_pagination(client: TestClient) -> None:
         book_list.append(response.json())
 
     # first page
-    # Get All books with page default: 1 and limit default: 100
-    limit = 100
+    # Get All books with page default: 1 and limit default: 20
+    limit = 20
     response = client.get("/api/v1/books")
     assert response.status_code == 200
     data_response = response.json()
     assert len(data_response) == limit
     for book in book_list[0:limit]:
         assert book in data_response
-    # Get All books with page: 1 and limit: 100
+    # Get All books with page: 1 and limit: 20
     page = 1
-    limit = 100
+    limit = 20
     response = client.get(f"/api/v1/books?page={page}&limit={limit}")
     assert response.status_code == 200
     data_response = response.json()
