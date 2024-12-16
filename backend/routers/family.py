@@ -9,6 +9,7 @@ from backend.models import (
     FamilyUpdate,
     FamilyPublicWithMembers,
 )
+from ..internals import constants
 
 router = APIRouter(
     prefix="/families",
@@ -29,8 +30,14 @@ def create_family(*, session: Session = Depends(get_session), family: FamilyCrea
 def read_families(
     *,
     session: Session = Depends(get_session),
-    page: int = Query(default=1, gt=0),
-    limit: int = Query(default=20, le=100, gt=0),
+    page: int = Query(
+        default=constants.PAGE_DEFAULT_VALUE, ge=constants.PAGE_MINIMAL_VALUE
+    ),
+    limit: int = Query(
+        default=constants.LIMIT_DEFAULT_VALUE,
+        le=constants.LIMIT_MAXIMAL_VALUE,
+        ge=constants.LIMIT_MINIMAL_VALUE,
+    ),
 ):
     offset = page * limit - limit
     families = session.exec(select(FamilyTable).offset(offset).limit(limit)).all()
