@@ -16,6 +16,10 @@ For all APIs, a JSON will be returned:
 
 At least four APIs by database's table to Create, Read, Update and Delete data.
 
+### Delete
+
+In case of success, the Delete APIs will return an HTTP 204 No Content with no response body.
+
 ## Search API
 
 At least one search API by database's table with at least pagination, filter and sorting.
