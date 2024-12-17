@@ -2,11 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 from typing_extensions import Annotated
 from backend.config import get_settings, Settings
-
 from backend.database import get_session
-from backend.models import BookTable, BookPublic, BookCreate, BookUpdate
+from backend.models import (
+    BookTable,
+    BookPublic,
+    BooksPublic,
+    BookCreate,
+    BookUpdate,
+    PaginationMetadata,
+)
 from backend.internals.book_notice import isbn2book
 from ..internals import constants
+
+import math
 
 
 router = APIRouter(
@@ -55,7 +63,7 @@ async def create_book_isbn(
     return db_data
 
 
-@router.get("", response_model=list[BookPublic])
+@router.get("", response_model=BooksPublic)
 def read_books(
     *,
     session: Session = Depends(get_session),
@@ -68,9 +76,23 @@ def read_books(
         ge=constants.LIMIT_MINIMAL_VALUE,
     ),
 ):
-    offset = page * limit - limit
+    offset = (page - 1) * limit
     books = session.exec(select(BookTable).offset(offset).limit(limit)).all()
-    return books
+
+    # Query total item count
+    total_items = len(session.exec(select(BookTable)).all())
+    # Calculate total pages
+    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
+
+    metadata = PaginationMetadata(
+        count=len(books),
+        current_limit=limit,
+        current_page=page,
+        total_items=total_items,
+        total_pages=total_pages,
+    )
+
+    return BooksPublic(data=books, meta=metadata)
 
 
 @router.get("/{book_id}", response_model=BookPublic)

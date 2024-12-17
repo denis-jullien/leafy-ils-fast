@@ -45,6 +45,14 @@ class SharedUpdate(SQLModel):
     last_update_date: Optional[date] = None
 
 
+class PaginationMetadata(SQLModel):
+    count: int  # number of items in the current page
+    current_page: int  # the current page number
+    current_limit: int  # number of items per page (as specified in the query)
+    total_items: int  # total number of items available in the dataset
+    total_pages: int  # total number of pages
+
+
 # Book
 
 
@@ -73,6 +81,11 @@ class BookTable(BookBase, table=True):
 
 class BookPublic(BookBase):
     id: int
+
+
+class BooksPublic(SQLModel):
+    data: list[BookPublic]
+    meta: PaginationMetadata
 
 
 class BookCreate(BookBase):
@@ -114,6 +127,11 @@ class FamilyPublic(FamilyBase):
     id: int
 
 
+class FamiliesPublic(SQLModel):
+    data: list[FamilyPublic]
+    meta: PaginationMetadata
+
+
 class FamilyCreate(FamilyBase):
     pass
 
@@ -147,6 +165,11 @@ class MemberPublic(MemberBase):
     id: int
 
 
+class MembersPublic(SQLModel):
+    data: list[MemberPublic]
+    meta: PaginationMetadata
+
+
 class MemberCreate(MemberBase):
     pass
 
@@ -178,6 +201,11 @@ class CirculationTable(CirculationBase, table=True):
 
 class CirculationPublic(CirculationBase):
     id: int
+
+
+class CirculationsPublic(SQLModel):
+    data: list[CirculationPublic]
+    meta: PaginationMetadata
 
 
 class CirculationCreate(CirculationBase):
