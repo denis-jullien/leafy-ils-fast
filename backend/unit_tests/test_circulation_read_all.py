@@ -88,9 +88,9 @@ def test_read_all_circulation_with_pagination(client: TestClient) -> None:
     "page,limit",
     [
         # invalid page
-        (constants.PAGE_MINIMAL_VALUE - 1, 6),
+        (constants.DEFAULT_MINIMAL_VALUE - 1, 6),
         # invalid limit
-        (1, constants.LIMIT_MINIMAL_VALUE - 1),
+        (1, constants.DEFAULT_MINIMAL_VALUE - 1),
         (1, constants.LIMIT_MAXIMAL_VALUE + 1),
     ],
 )
