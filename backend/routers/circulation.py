@@ -9,6 +9,8 @@ from backend.models import (
     CirculationUpdate,
     CirculationPublicWithRelationship,
 )
+from ..internals import constants
+
 
 router = APIRouter(
     prefix="/circulations",
@@ -31,8 +33,14 @@ def create_circulation(
 def read_circulations(
     *,
     session: Session = Depends(get_session),
-    page: int = Query(default=1, gt=0),
-    limit: int = Query(default=20, le=100, gt=0),
+    page: int = Query(
+        default=constants.PAGE_DEFAULT_VALUE, ge=constants.PAGE_MINIMAL_VALUE
+    ),
+    limit: int = Query(
+        default=constants.LIMIT_DEFAULT_VALUE,
+        le=constants.LIMIT_MAXIMAL_VALUE,
+        ge=constants.LIMIT_MINIMAL_VALUE,
+    ),
 ):
     offset = page * limit - limit
     circulations = session.exec(

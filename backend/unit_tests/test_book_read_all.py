@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 import pytest
+from ..internals import constants
 
 
 def test_read_all_book_without_book(client: TestClient) -> None:
@@ -32,17 +33,17 @@ def test_read_all_book_with_pagination(client: TestClient) -> None:
         book_list.append(response.json())
 
     # first page
-    # Get All books with page default: 1 and limit default: 20
-    limit = 20
+    # Get All books with page default: 1 and limit default: LIMIT_DEFAULT_VALUE
+    limit = constants.LIMIT_DEFAULT_VALUE
     response = client.get("/api/v1/books")
     assert response.status_code == 200
     data_response = response.json()
     assert len(data_response) == limit
     for book in book_list[0:limit]:
         assert book in data_response
-    # Get All books with page: 1 and limit: 20
+    # Get All books with page: 1 and limit: LIMIT_DEFAULT_VALUE
     page = 1
-    limit = 20
+    limit = constants.LIMIT_DEFAULT_VALUE
     response = client.get(f"/api/v1/books?page={page}&limit={limit}")
     assert response.status_code == 200
     data_response = response.json()
@@ -63,9 +64,9 @@ def test_read_all_book_with_pagination(client: TestClient) -> None:
         assert book in data_response
 
     # last page
-    # Get All books with page: 2 and limit: 100
+    # Get All books with page: 2 and limit: LIMIT_MAXIMAL_VALUE
     page = 2
-    limit = 100
+    limit = constants.LIMIT_MAXIMAL_VALUE
     offset = page * limit - limit
     response = client.get(f"/api/v1/books?page={page}&limit={limit}")
     assert response.status_code == 200
@@ -80,12 +81,10 @@ def test_read_all_book_with_pagination(client: TestClient) -> None:
     "page,limit",
     [
         # invalid page
-        (-1, 6),
-        (0, 6),
+        (constants.PAGE_MINIMAL_VALUE - 1, 6),
         # invalid limit
-        (1, 0),
-        (1, -1),
-        (1, 101),
+        (1, constants.LIMIT_MINIMAL_VALUE - 1),
+        (1, constants.LIMIT_MAXIMAL_VALUE + 1),
     ],
 )
 def test_read_all_book_with_pagination_failure(

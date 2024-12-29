@@ -6,6 +6,7 @@ from backend.config import get_settings, Settings
 from backend.database import get_session
 from backend.models import BookTable, BookPublic, BookCreate, BookUpdate
 from backend.internals.book_notice import isbn2book
+from ..internals import constants
 
 
 router = APIRouter(
@@ -58,8 +59,14 @@ async def create_book_isbn(
 def read_books(
     *,
     session: Session = Depends(get_session),
-    page: int = Query(default=1, gt=0),
-    limit: int = Query(default=20, le=100, gt=0),
+    page: int = Query(
+        default=constants.PAGE_DEFAULT_VALUE, ge=constants.PAGE_MINIMAL_VALUE
+    ),
+    limit: int = Query(
+        default=constants.LIMIT_DEFAULT_VALUE,
+        le=constants.LIMIT_MAXIMAL_VALUE,
+        ge=constants.LIMIT_MINIMAL_VALUE,
+    ),
 ):
     offset = page * limit - limit
     books = session.exec(select(BookTable).offset(offset).limit(limit)).all()
