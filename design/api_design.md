@@ -47,11 +47,12 @@ The pagination will be manage as following:
 - response structure:
     1. `data`: contains the array of items for the current page
     2. `meta`:
-        - `count`: number of items in the current page
-        - `current_page`: the current page number
-        - `current_limit`: number of items per page (as specified in the query)
         - `total_items`: total number of items available in the dataset
         - `total_pages`: total number of pages
+        - if needed, we could add later:
+            - `count`: number of items in the current page
+            - `current_page`: the current page number
+            - `current_limit`: number of items per page (as specified in the query)
 - HTTP status codes
     - `200 OK`: Request succeeded, data returned successfully
     - `400 Bad Request`: Generic errors from the client

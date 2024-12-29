@@ -55,7 +55,6 @@ def test_read_all_book_with_pagination_default(client: TestClient) -> None:
     list_response = response.json()
 
     # first page
-    page = 1
     limit = constants.LIMIT_DEFAULT_VALUE
     # data check
     assert "data" in list_response
@@ -65,9 +64,6 @@ def test_read_all_book_with_pagination_default(client: TestClient) -> None:
         assert book in data_response
     # meta check
     assert "meta" in list_response
-    assert list_response["meta"]["count"] == limit
-    assert list_response["meta"]["current_page"] == page
-    assert list_response["meta"]["current_limit"] == limit
     assert list_response["meta"]["total_items"] == total_items
     assert list_response["meta"]["total_pages"] == 8
 
@@ -113,9 +109,6 @@ def test_read_all_book_with_pagination(
 
     # meta check
     assert "meta" in list_response
-    assert list_response["meta"]["count"] == count
-    assert list_response["meta"]["current_page"] == page
-    assert list_response["meta"]["current_limit"] == limit
     assert list_response["meta"]["total_items"] == total_items
     assert list_response["meta"]["total_pages"] == total_pages
 
@@ -124,9 +117,9 @@ def test_read_all_book_with_pagination(
     "page,limit",
     [
         # invalid page
-        (constants.PAGE_MINIMAL_VALUE - 1, 6),
+        (constants.DEFAULT_MINIMAL_VALUE - 1, 6),
         # invalid limit
-        (1, constants.LIMIT_MINIMAL_VALUE - 1),
+        (1, constants.DEFAULT_MINIMAL_VALUE - 1),
         (1, constants.LIMIT_MAXIMAL_VALUE + 1),
     ],
 )

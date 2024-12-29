@@ -46,9 +46,6 @@ class SharedUpdate(SQLModel):
 
 
 class PaginationMetadata(SQLModel):
-    count: int  # number of items in the current page
-    current_page: int  # the current page number
-    current_limit: int  # number of items per page (as specified in the query)
     total_items: int  # total number of items available in the dataset
     total_pages: int  # total number of pages
 

@@ -68,12 +68,12 @@ def read_books(
     *,
     session: Session = Depends(get_session),
     page: int = Query(
-        default=constants.PAGE_DEFAULT_VALUE, ge=constants.PAGE_MINIMAL_VALUE
+        default=constants.DEFAULT_MINIMAL_VALUE, ge=constants.DEFAULT_MINIMAL_VALUE
     ),
     limit: int = Query(
         default=constants.LIMIT_DEFAULT_VALUE,
         le=constants.LIMIT_MAXIMAL_VALUE,
-        ge=constants.LIMIT_MINIMAL_VALUE,
+        ge=constants.DEFAULT_MINIMAL_VALUE,
     ),
 ):
     offset = (page - 1) * limit
@@ -85,9 +85,6 @@ def read_books(
     total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
 
     metadata = PaginationMetadata(
-        count=len(books),
-        current_limit=limit,
-        current_page=page,
         total_items=total_items,
         total_pages=total_pages,
     )
