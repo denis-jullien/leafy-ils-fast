@@ -48,11 +48,14 @@ The pagination will be manage as following:
     1. `data`: contains the array of items for the current page
     2. `meta`:
         - `total_items`: total number of items available in the dataset
-        - `limit`: number of items per page (as specified in the query)
-        - `current_page`: the current page number
         - `total_pages`: total number of pages
+        - if needed, we could add later:
+            - `count`: number of items in the current page
+            - `current_page`: the current page number
+            - `current_limit`: number of items per page (as specified in the query)
 - HTTP status codes
     - `200 OK`: Request succeeded, data returned successfully
-    - `400 Bad Request`: Invalid query parameters (e.g., negative page or limit values)
+    - `400 Bad Request`: Generic errors from the client
     - `404 Not Found`: Requested page does not exist (e.g., page > total_pages)
+    - `422 Unprocessable Entity`: Invalid query parameters (e.g., negative page or limit values)
     - `500 Internal Server Error`: Unexpected server error

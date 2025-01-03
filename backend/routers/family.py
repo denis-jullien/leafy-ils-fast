@@ -31,12 +31,12 @@ def read_families(
     *,
     session: Session = Depends(get_session),
     page: int = Query(
-        default=constants.PAGE_DEFAULT_VALUE, ge=constants.PAGE_MINIMAL_VALUE
+        default=constants.DEFAULT_MINIMAL_VALUE, ge=constants.DEFAULT_MINIMAL_VALUE
     ),
     limit: int = Query(
         default=constants.LIMIT_DEFAULT_VALUE,
         le=constants.LIMIT_MAXIMAL_VALUE,
-        ge=constants.LIMIT_MINIMAL_VALUE,
+        ge=constants.DEFAULT_MINIMAL_VALUE,
     ),
 ):
     offset = page * limit - limit
