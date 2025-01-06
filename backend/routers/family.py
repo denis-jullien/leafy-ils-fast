@@ -5,15 +5,13 @@ from backend.database import get_session
 from backend.models import (
     FamilyTable,
     FamilyPublic,
+    FamiliesPublic,
     FamilyCreate,
     FamilyUpdate,
     FamilyPublicWithMembers,
-    FamiliesPublic,
-    PaginationMetadata,
 )
 from ..internals import constants
-
-import math
+from ..internals.table_management import get_paginate_metadata
 
 router = APIRouter(
     prefix="/families",
@@ -45,16 +43,7 @@ def read_families(
 ):
     offset = page * limit - limit
     families = session.exec(select(FamilyTable).offset(offset).limit(limit)).all()
-
-    # Query total item count
-    total_items = len(session.exec(select(FamilyTable)).all())
-    # Calculate total pages
-    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
-
-    metadata = PaginationMetadata(
-        total_items=total_items,
-        total_pages=total_pages,
-    )
+    metadata = get_paginate_metadata(session, select(FamilyTable), limit)
 
     return FamiliesPublic(data=families, meta=metadata)
 

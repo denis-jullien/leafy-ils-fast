@@ -3,18 +3,10 @@ from sqlmodel import Session, select
 from typing_extensions import Annotated
 from backend.config import get_settings, Settings
 from backend.database import get_session
-from backend.models import (
-    BookTable,
-    BookPublic,
-    BooksPublic,
-    BookCreate,
-    BookUpdate,
-    PaginationMetadata,
-)
+from backend.models import BookTable, BookPublic, BooksPublic, BookCreate, BookUpdate
 from backend.internals.book_notice import isbn2book
 from ..internals import constants
-
-import math
+from ..internals.table_management import get_paginate_metadata
 
 
 router = APIRouter(
@@ -78,16 +70,7 @@ def read_books(
 ):
     offset = (page - 1) * limit
     books = session.exec(select(BookTable).offset(offset).limit(limit)).all()
-
-    # Query total item count
-    total_items = len(session.exec(select(BookTable)).all())
-    # Calculate total pages
-    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
-
-    metadata = PaginationMetadata(
-        total_items=total_items,
-        total_pages=total_pages,
-    )
+    metadata = get_paginate_metadata(session, select(BookTable), limit)
 
     return BooksPublic(data=books, meta=metadata)
 

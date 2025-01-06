@@ -9,12 +9,9 @@ from backend.models import (
     CirculationCreate,
     CirculationUpdate,
     CirculationPublicWithRelationship,
-    PaginationMetadata,
 )
 from ..internals import constants
-
-
-import math
+from ..internals.table_management import get_paginate_metadata
 
 router = APIRouter(
     prefix="/circulations",
@@ -50,16 +47,7 @@ def read_circulations(
     circulations = session.exec(
         select(CirculationTable).offset(offset).limit(limit)
     ).all()
-
-    # Query total item count
-    total_items = len(session.exec(select(CirculationTable)).all())
-    # Calculate total pages
-    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
-
-    metadata = PaginationMetadata(
-        total_items=total_items,
-        total_pages=total_pages,
-    )
+    metadata = get_paginate_metadata(session, select(CirculationTable), limit)
 
     return CirculationsPublic(data=circulations, meta=metadata)
 
