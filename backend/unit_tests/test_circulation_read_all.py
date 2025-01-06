@@ -3,14 +3,14 @@ import pytest
 from ..internals import constants
 
 
-def test_read_all_circulation_without_circulation(client: TestClient) -> None:
-    response = client.get("/api/v1/circulations")
-    assert response.status_code == 200
-    data_response = response.json()
-    assert data_response == []
+def add_a_lot_of_elements(client: TestClient, total_items: int):
+    """
+    default precondition for paginate API
 
-
-def test_read_all_circulation_with_pagination(client: TestClient) -> None:
+    Return
+    ----------
+    circulation list
+    """
     # add family
     family_data = {"email": "test_email", "phone_number": "phone_test"}
     response = client.post("/api/v1/families", json=family_data)
@@ -39,49 +39,83 @@ def test_read_all_circulation_with_pagination(client: TestClient) -> None:
         assert response.status_code == 200
         circulation_list.append(response.json())
 
-    # first page
-    # Get All circulations with offset default: 0 and limit default: LIMIT_DEFAULT_VALUE
-    limit = constants.LIMIT_DEFAULT_VALUE
+    return circulation_list
+
+
+def test_read_all_circulation_without_circulation(client: TestClient) -> None:
     response = client.get("/api/v1/circulations")
     assert response.status_code == 200
-    data_response = response.json()
-    assert len(data_response) == limit
-    for circulation in circulation_list[0:limit]:
-        assert circulation in data_response
-    # Get All books with page: 1 and limit: LIMIT_DEFAULT_VALUE
-    page = 1
+    list_response = response.json()
+    assert "data" in list_response
+    data_response = list_response["data"]
+    assert data_response == []
+
+
+def test_read_all_circulation_with_pagination_default(client: TestClient) -> None:
+    total_items = 150
+    circulation_list = add_a_lot_of_elements(client, total_items)
+
+    response = client.get("/api/v1/circulations")
+    assert response.status_code == 200
+    list_response = response.json()
+
+    # first page
     limit = constants.LIMIT_DEFAULT_VALUE
-    response = client.get(f"/api/v1/circulations?page={page}&limit={limit}")
-    assert response.status_code == 200
-    data_response = response.json()
+    # data check
+    assert "data" in list_response
+    data_response = list_response["data"]
     assert len(data_response) == limit
     for circulation in circulation_list[0:limit]:
         assert circulation in data_response
+    # meta check
+    assert "meta" in list_response
+    assert list_response["meta"]["total_items"] == total_items
+    assert list_response["meta"]["total_pages"] == 8
 
-    # middle of pages
-    # Get All circulations with page: 10 and limit: 6
-    page = 10
-    limit = 6
-    offset = page * limit - limit
+
+@pytest.mark.parametrize(
+    "input,output",
+    [
+        (
+            {"page": 1, "limit": constants.LIMIT_DEFAULT_VALUE},
+            {"count": constants.LIMIT_DEFAULT_VALUE, "total_pages": 8},
+        ),
+        ({"page": 10, "limit": 6}, {"count": 6, "total_pages": 25}),
+        (
+            {"page": 2, "limit": constants.LIMIT_MAXIMAL_VALUE},
+            {"count": 50, "total_pages": 2},
+        ),  # count = total_items - limit
+    ],
+)
+# Get All circulations with different queries
+def test_read_all_circulation_with_pagination(
+    client: TestClient, input: dict, output: dict
+) -> None:
+    total_items = 150
+    page = input["page"]
+    limit = input["limit"]
+    count = output["count"]
+    total_pages = output["total_pages"]
+    offset = (page - 1) * limit
+    circulation_list = add_a_lot_of_elements(client, total_items)
+
     response = client.get(f"/api/v1/circulations?page={page}&limit={limit}")
     assert response.status_code == 200
-    data_response = response.json()
-    assert len(data_response) == limit
-    for circulation in circulation_list[offset : offset + limit]:
+    list_response = response.json()
+
+    # data check
+    assert "data" in list_response
+    data_response = list_response["data"]
+
+    assert len(data_response) == count
+    circulation_max = offset + limit if (offset + limit) < total_items else total_items
+    for circulation in circulation_list[offset:circulation_max]:
         assert circulation in data_response
 
-    # last page
-    # Get All circulations with page: 2 and limit: LIMIT_MAXIMAL_VALUE
-    page = 2
-    limit = constants.LIMIT_MAXIMAL_VALUE
-    offset = page * limit - limit
-    response = client.get(f"/api/v1/circulations?page={page}&limit={limit}")
-    assert response.status_code == 200
-    data_response = response.json()
-    assert len(data_response) <= limit
-    assert len(data_response) == total_items - offset
-    for circulation in circulation_list[offset:total_items]:
-        assert circulation in data_response
+    # meta check
+    assert "meta" in list_response
+    assert list_response["meta"]["total_items"] == total_items
+    assert list_response["meta"]["total_pages"] == total_pages
 
 
 @pytest.mark.parametrize(
