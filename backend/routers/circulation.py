@@ -5,12 +5,16 @@ from backend.database import get_session
 from backend.models import (
     CirculationTable,
     CirculationPublic,
+    CirculationsPublic,
     CirculationCreate,
     CirculationUpdate,
     CirculationPublicWithRelationship,
+    PaginationMetadata,
 )
 from ..internals import constants
 
+
+import math
 
 router = APIRouter(
     prefix="/circulations",
@@ -29,7 +33,7 @@ def create_circulation(
     return db_data
 
 
-@router.get("", response_model=list[CirculationPublic])
+@router.get("", response_model=CirculationsPublic)
 def read_circulations(
     *,
     session: Session = Depends(get_session),
@@ -46,7 +50,18 @@ def read_circulations(
     circulations = session.exec(
         select(CirculationTable).offset(offset).limit(limit)
     ).all()
-    return circulations
+
+    # Query total item count
+    total_items = len(session.exec(select(CirculationTable)).all())
+    # Calculate total pages
+    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
+
+    metadata = PaginationMetadata(
+        total_items=total_items,
+        total_pages=total_pages,
+    )
+
+    return CirculationsPublic(data=circulations, meta=metadata)
 
 
 @router.get("/{circulation_id}", response_model=CirculationPublicWithRelationship)
