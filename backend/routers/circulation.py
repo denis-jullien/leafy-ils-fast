@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
@@ -42,10 +43,16 @@ def read_circulations(
         le=constants.LIMIT_MAXIMAL_VALUE,
         ge=constants.DEFAULT_MINIMAL_VALUE,
     ),
+    start_borrowed_date: date = Query(default=constants.DATE_DEFAULT_START_VALUE),
+    end_borrowed_date: date = Query(default=constants.DATE_DEFAULT_END_VALUE),
 ):
     offset = page * limit - limit
     circulations = session.exec(
-        select(CirculationTable).offset(offset).limit(limit)
+        select(CirculationTable)
+        .where(CirculationTable.borrowed_date >= start_borrowed_date)
+        .where(CirculationTable.borrowed_date <= end_borrowed_date)
+        .offset(offset)
+        .limit(limit)
     ).all()
     metadata = get_paginate_metadata(session, select(CirculationTable), limit)
 
