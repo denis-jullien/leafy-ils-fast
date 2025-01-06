@@ -3,7 +3,9 @@ import pytest
 from ..internals import constants
 
 
-def add_a_lot_of_elements(client: TestClient, total_items: int):
+def add_a_lot_of_elements(
+    client: TestClient, total_items: int, update_init_data: dict = None
+):
     """
     default precondition for paginate API
 
@@ -26,6 +28,10 @@ def add_a_lot_of_elements(client: TestClient, total_items: int):
         "available": False,
         "archived": True,
     }
+    if update_init_data:
+        for key, value in update_init_data.items():
+            init_data[key] = value
+
     # create a lot of elements
     for _ in range(total_items):
         response = client.post("/api/v1/books", json=init_data)
@@ -34,6 +40,23 @@ def add_a_lot_of_elements(client: TestClient, total_items: int):
 
     # provide the data to the test
     return book_list
+
+
+def get_all_books_filtered(client: TestClient, filter: str) -> list:
+    data_response = list()
+    page = 1
+    while True:
+        response = client.get(f"/api/v1/books?page={page}&{filter}")
+        assert response.status_code == 200
+        list_response = response.json()
+        assert "data" in list_response
+
+        # exit the loop when the last page is reached
+        if list_response["data"] == []:
+            break
+        data_response.extend(list_response["data"])
+        page += 1
+    return data_response
 
 
 def test_read_all_book_without_book(client: TestClient) -> None:
@@ -130,3 +153,35 @@ def test_read_all_book_with_pagination_failure(
     assert response.status_code == 422
     data_response = response.json()
     assert "detail" in data_response
+
+
+@pytest.mark.parametrize(
+    "available_count,not_available_count",
+    [
+        (10, 0),
+        (0, 120),
+        (15, 120),
+    ],
+)
+def test_read_all_book_with_available_filter(
+    client: TestClient, available_count: int, not_available_count: int
+) -> None:
+    book_list_available = add_a_lot_of_elements(
+        client, available_count, {"available": True}
+    )
+    book_list_not_available = add_a_lot_of_elements(
+        client, not_available_count, {"available": False}
+    )
+    book_list_available.extend(
+        add_a_lot_of_elements(client, available_count, {"available": True})
+    )
+
+    # Get all data with the filter
+
+    current_book_list_available = get_all_books_filtered(client, "available=True")
+    assert len(current_book_list_available) == (available_count * 2)
+    assert current_book_list_available == book_list_available
+
+    current_book_list_not_available = get_all_books_filtered(client, "available=False")
+    assert len(current_book_list_not_available) == not_available_count
+    assert current_book_list_not_available == book_list_not_available
