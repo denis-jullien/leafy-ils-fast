@@ -67,9 +67,17 @@ def read_books(
         le=constants.LIMIT_MAXIMAL_VALUE,
         ge=constants.DEFAULT_MINIMAL_VALUE,
     ),
+    available: bool = Query(default=None),
 ):
     offset = (page - 1) * limit
-    books = session.exec(select(BookTable).offset(offset).limit(limit)).all()
+
+    # Filter data
+    statement = select(BookTable)
+    if available is not None:
+        statement = statement.where(BookTable.available == available)
+
+    # Return paginated data
+    books = session.exec(statement.offset(offset).limit(limit)).all()
     metadata = get_paginate_metadata(session, select(BookTable), limit)
 
     return BooksPublic(data=books, meta=metadata)
