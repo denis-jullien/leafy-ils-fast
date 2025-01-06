@@ -8,8 +8,12 @@ from backend.models import (
     FamilyCreate,
     FamilyUpdate,
     FamilyPublicWithMembers,
+    FamiliesPublic,
+    PaginationMetadata,
 )
 from ..internals import constants
+
+import math
 
 router = APIRouter(
     prefix="/families",
@@ -26,7 +30,7 @@ def create_family(*, session: Session = Depends(get_session), family: FamilyCrea
     return db_data
 
 
-@router.get("", response_model=list[FamilyPublic])
+@router.get("", response_model=FamiliesPublic)
 def read_families(
     *,
     session: Session = Depends(get_session),
@@ -41,7 +45,18 @@ def read_families(
 ):
     offset = page * limit - limit
     families = session.exec(select(FamilyTable).offset(offset).limit(limit)).all()
-    return families
+
+    # Query total item count
+    total_items = len(session.exec(select(FamilyTable)).all())
+    # Calculate total pages
+    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
+
+    metadata = PaginationMetadata(
+        total_items=total_items,
+        total_pages=total_pages,
+    )
+
+    return FamiliesPublic(data=families, meta=metadata)
 
 
 @router.get("/{family_id}", response_model=FamilyPublicWithMembers)

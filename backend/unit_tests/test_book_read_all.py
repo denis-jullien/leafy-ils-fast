@@ -7,7 +7,7 @@ def add_a_lot_of_elements(client: TestClient, total_items: int):
     """
     default precondition for paginate API
 
-    Yield
+    Return
     ----------
     book list
     """
@@ -45,7 +45,7 @@ def test_read_all_book_without_book(client: TestClient) -> None:
     assert data_response == []
 
 
-# Get All books with default queries
+# Get all elements with default queries
 def test_read_all_book_with_pagination_default(client: TestClient) -> None:
     total_items = 150
     book_list = add_a_lot_of_elements(client, total_items)
@@ -82,7 +82,7 @@ def test_read_all_book_with_pagination_default(client: TestClient) -> None:
         ),  # count = total_items - limit
     ],
 )
-# Get All books with different queries
+# Get all elements with different queries
 def test_read_all_book_with_pagination(
     client: TestClient, input: dict, output: dict
 ) -> None:
