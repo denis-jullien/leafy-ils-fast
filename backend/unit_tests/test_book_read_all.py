@@ -159,8 +159,8 @@ def test_read_all_book_with_pagination_failure(
     "available_count,not_available_count",
     [
         (10, 0),
-        (0,120),
-        (15,120),
+        (0, 120),
+        (15, 120),
     ],
 )
 def test_read_all_book_with_available_filter(
