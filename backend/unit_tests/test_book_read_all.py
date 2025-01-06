@@ -163,7 +163,7 @@ def test_read_all_book_with_pagination_failure(
         (15, 120),
     ],
 )
-def test_read_all_book_with_available_filter(
+def test_read_all_book_filtered_by_available(
     client: TestClient, available_count: int, not_available_count: int
 ) -> None:
     book_list_available = add_a_lot_of_elements(

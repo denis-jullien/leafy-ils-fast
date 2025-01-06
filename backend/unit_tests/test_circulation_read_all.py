@@ -3,7 +3,9 @@ import pytest
 from ..internals import constants
 
 
-def add_a_lot_of_elements(client: TestClient, total_items: int):
+def add_a_lot_of_elements(
+    client: TestClient, total_items: int, update_init_data: dict = None
+):
     """
     default precondition for paginate API
 
@@ -19,27 +21,51 @@ def add_a_lot_of_elements(client: TestClient, total_items: int):
     member_data = {"firstname": "firstname", "surname": "surname", "family_id": 1}
     response = client.post("/api/v1/members", json=member_data)
     assert response.status_code == 200
+    member_id = response.json()["id"]
     response = client.post("/api/v1/members", json=member_data)
     assert response.status_code == 200
     # add book
     book_data = {"title": "title", "author": "author"}
     response = client.post("/api/v1/books", json=book_data)
     assert response.status_code == 200
+    book_id = response.json()["id"]
     # add circulations
     circulation_list = list()
     init_data = {
         "borrowed_date": "2022-12-04",
-        "book_id": 1,
-        "member_id": 1,
+        "book_id": book_id,
+        "member_id": member_id,
         "returned_date": "2030-12-20",
     }
-    total_items = 150
+    if update_init_data:
+        for key, value in update_init_data.items():
+            init_data[key] = value
+
+    # create a lot of elements
     for _ in range(total_items):
         response = client.post("/api/v1/circulations", json=init_data)
         assert response.status_code == 200
         circulation_list.append(response.json())
 
+    # provide the data to the test
     return circulation_list
+
+
+def get_all_circulations_filtered(client: TestClient, filter: str) -> list:
+    data_response = list()
+    page = 1
+    while True:
+        response = client.get(f"/api/v1/circulations?page={page}&{filter}")
+        assert response.status_code == 200
+        list_response = response.json()
+        assert "data" in list_response
+
+        # exit the loop when the last page is reached
+        if list_response["data"] == []:
+            break
+        data_response.extend(list_response["data"])
+        page += 1
+    return data_response
 
 
 def test_read_all_circulation_without_circulation(client: TestClient) -> None:
@@ -135,3 +161,65 @@ def test_read_all_circulation_with_pagination_failure(
     assert response.status_code == 422
     data_response = response.json()
     assert "detail" in data_response
+
+
+def test_read_all_circulation_filtered_by_borrowed_date(client: TestClient) -> None:
+    circulation_list_1 = add_a_lot_of_elements(
+        client, 1, {"borrowed_date": "2022-12-04"}
+    )
+    circulation_list_2 = add_a_lot_of_elements(
+        client, 10, {"borrowed_date": "2023-12-04"}
+    )
+    circulation_list_3 = add_a_lot_of_elements(
+        client, 2, {"borrowed_date": "2022-01-04"}
+    )
+    circulation_list_4 = add_a_lot_of_elements(
+        client, 5, {"borrowed_date": "2022-12-04"}
+    )
+    circulation_list_5 = add_a_lot_of_elements(
+        client, 5, {"borrowed_date": "2022-12-10"}
+    )
+    circulation_list_6 = add_a_lot_of_elements(
+        client, 2, {"borrowed_date": "2025-01-02"}
+    )
+
+    # Get all data with the filter
+
+    current_circulation_list = get_all_circulations_filtered(
+        client, "start_borrowed_date=2024-12-04"
+    )
+    print(f"current_circulation_list: {current_circulation_list}")
+    expected_circulation_list = circulation_list_6
+    assert len(current_circulation_list) == len(expected_circulation_list)
+    assert current_circulation_list == expected_circulation_list
+
+    current_circulation_list = get_all_circulations_filtered(
+        client, "end_borrowed_date=2022-12-06"
+    )
+    expected_circulation_list = (
+        circulation_list_1 + circulation_list_3 + circulation_list_4
+    )
+    assert len(current_circulation_list) == len(expected_circulation_list)
+    assert current_circulation_list == expected_circulation_list
+
+    current_circulation_list = get_all_circulations_filtered(
+        client, "start_borrowed_date=2022-12-31&end_borrowed_date=2023-12-31"
+    )
+    expected_circulation_list = circulation_list_2
+    assert len(current_circulation_list) == len(expected_circulation_list)
+    assert current_circulation_list == expected_circulation_list
+
+    current_circulation_list = get_all_circulations_filtered(
+        client,
+        f"start_borrowed_date={constants.DATE_DEFAULT_START_VALUE}&end_borrowed_date={constants.DATE_DEFAULT_END_VALUE}",
+    )
+    expected_circulation_list = (
+        circulation_list_1
+        + circulation_list_2
+        + circulation_list_3
+        + circulation_list_4
+        + circulation_list_5
+        + circulation_list_6
+    )
+    assert len(current_circulation_list) == len(expected_circulation_list)
+    assert current_circulation_list == expected_circulation_list
