@@ -9,11 +9,9 @@ from backend.models import (
     MemberCreate,
     MemberUpdate,
     MemberPublicWithFamily,
-    PaginationMetadata,
 )
 from ..internals import constants
-
-import math
+from ..internals.table_management import get_paginate_metadata
 
 router = APIRouter(
     prefix="/members",
@@ -45,15 +43,7 @@ def read_members(
 ):
     offset = page * limit - limit
     members = session.exec(select(MemberTable).offset(offset).limit(limit)).all()
-    # Query total item count
-    total_items = len(session.exec(select(MemberTable)).all())
-    # Calculate total pages
-    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
-
-    metadata = PaginationMetadata(
-        total_items=total_items,
-        total_pages=total_pages,
-    )
+    metadata = get_paginate_metadata(session, select(MemberTable), limit)
 
     return MembersPublic(data=members, meta=metadata)
 
