@@ -5,11 +5,15 @@ from backend.database import get_session
 from backend.models import (
     MemberTable,
     MemberPublic,
+    MembersPublic,
     MemberCreate,
     MemberUpdate,
     MemberPublicWithFamily,
+    PaginationMetadata,
 )
 from ..internals import constants
+
+import math
 
 router = APIRouter(
     prefix="/members",
@@ -26,7 +30,7 @@ def create_member(*, session: Session = Depends(get_session), member: MemberCrea
     return db_data
 
 
-@router.get("", response_model=list[MemberPublic])
+@router.get("", response_model=MembersPublic)
 def read_members(
     *,
     session: Session = Depends(get_session),
@@ -41,7 +45,17 @@ def read_members(
 ):
     offset = page * limit - limit
     members = session.exec(select(MemberTable).offset(offset).limit(limit)).all()
-    return members
+    # Query total item count
+    total_items = len(session.exec(select(MemberTable)).all())
+    # Calculate total pages
+    total_pages = math.ceil(total_items / limit) if total_items > 0 else 1
+
+    metadata = PaginationMetadata(
+        total_items=total_items,
+        total_pages=total_pages,
+    )
+
+    return MembersPublic(data=members, meta=metadata)
 
 
 @router.get("/{member_id}", response_model=MemberPublicWithFamily)
