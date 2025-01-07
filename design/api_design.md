@@ -42,9 +42,9 @@ The pagination will be manage as following:
     5. date filtering (optional): allows filtering by date ranges
         - exact parameters will depends of the API research possibilities
         - format expected:
-            - `start_<date_parameter>`: filter results from this date
-            - `end_<date_parameter>`: filters results up to and including this date
-        - e.g., `?start_date=2024-01-01&end_date=2024-12-31`
+            - `<date_parameter>_start`: filter results from this date
+            - `<date_parameter>_end`: filters results up to and including this date
+        - e.g., `?date_start=2024-01-01&date_end=2024-12-31`
         - we will follow ISO 8601 format:
             - date format: YYYY-MM-DD
             - datetime format: YYYY-MM-DDTHH:MM:SSZ

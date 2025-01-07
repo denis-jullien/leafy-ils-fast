@@ -43,14 +43,14 @@ def read_circulations(
         le=constants.LIMIT_MAXIMAL_VALUE,
         ge=constants.DEFAULT_MINIMAL_VALUE,
     ),
-    start_borrowed_date: date = Query(default=constants.DATE_DEFAULT_START_VALUE),
-    end_borrowed_date: date = Query(default=constants.DATE_DEFAULT_END_VALUE),
+    borrowed_date_start: date = Query(default=constants.DATE_DEFAULT_START_VALUE),
+    borrowed_date_end: date = Query(default=constants.DATE_DEFAULT_END_VALUE),
 ):
     offset = page * limit - limit
     circulations = session.exec(
         select(CirculationTable)
-        .where(CirculationTable.borrowed_date >= start_borrowed_date)
-        .where(CirculationTable.borrowed_date <= end_borrowed_date)
+        .where(CirculationTable.borrowed_date >= borrowed_date_start)
+        .where(CirculationTable.borrowed_date <= borrowed_date_end)
         .offset(offset)
         .limit(limit)
     ).all()
