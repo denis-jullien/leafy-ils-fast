@@ -182,9 +182,12 @@ def test_read_all_book_filtered_by_archived(
     assert len(current_book_list_archived) == (archived_count * 2)
     assert current_book_list_archived == book_list_archived
 
-    current_book_list_not_archived = get_all_books_filtered(client, "filter[archived]=False")
+    current_book_list_not_archived = get_all_books_filtered(
+        client, "filter[archived]=False"
+    )
     assert len(current_book_list_not_archived) == not_archived_count
     assert current_book_list_not_archived == book_list_not_archived
+
 
 @pytest.mark.parametrize(
     "available_count,not_available_count",
@@ -209,10 +212,14 @@ def test_read_all_book_filtered_by_available(
 
     # Get all data with the filter
 
-    current_book_list_available = get_all_books_filtered(client, "filter[available]=True")
+    current_book_list_available = get_all_books_filtered(
+        client, "filter[available]=True"
+    )
     assert len(current_book_list_available) == (available_count * 2)
     assert current_book_list_available == book_list_available
 
-    current_book_list_not_available = get_all_books_filtered(client, "filter[available]=False")
+    current_book_list_not_available = get_all_books_filtered(
+        client, "filter[available]=False"
+    )
     assert len(current_book_list_not_available) == not_available_count
     assert current_book_list_not_available == book_list_not_available
