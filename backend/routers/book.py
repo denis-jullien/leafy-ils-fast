@@ -67,14 +67,17 @@ def read_books(
         le=constants.LIMIT_MAXIMAL_VALUE,
         ge=constants.DEFAULT_MINIMAL_VALUE,
     ),
-    available: bool = Query(default=None),
+    filter_available: bool = Query(default=None, alias="filter[available]"),
+    filter_archived: bool = Query(default=None, alias="filter[archived]"),
 ):
     offset = (page - 1) * limit
 
     # Filter data
     statement = select(BookTable)
-    if available is not None:
-        statement = statement.where(BookTable.available == available)
+    if filter_archived is not None:
+        statement = statement.where(BookTable.archived == filter_archived)
+    if filter_available is not None:
+        statement = statement.where(BookTable.available == filter_available)
 
     # Return paginated data
     books = session.exec(statement.offset(offset).limit(limit)).all()
