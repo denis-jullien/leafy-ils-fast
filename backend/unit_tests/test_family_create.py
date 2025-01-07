@@ -6,9 +6,13 @@ from fastapi.testclient import TestClient
     "data",
     [
         {"email": "test_email", "phone_number": "phone_test"},
-        {"email": "test@a.a", "phone_number": "003254", "last_adhesion_date":"2025-01-07"},
+        {
+            "email": "test@a.a",
+            "phone_number": "003254",
+            "last_adhesion_date": "2025-01-07",
+        },
         {"email": "test_email"},
-        {"phone_number": "phone_test"}
+        {"phone_number": "phone_test"},
     ],
 )
 def test_create_family_with_success(client: TestClient, data: dict) -> None:
@@ -20,12 +24,10 @@ def test_create_family_with_success(client: TestClient, data: dict) -> None:
     for key, value in data.items():
         assert data_response[key] == value
 
+
 @pytest.mark.parametrize(
     "data",
-    [
-        {},
-        {"last_adhesion_date":"2025-01-07"}
-    ],
+    [{}, {"last_adhesion_date": "2025-01-07"}],
 )
 def test_create_family_with_failure(client: TestClient, data: dict) -> None:
     response = client.post("/api/v1/families", json=data)

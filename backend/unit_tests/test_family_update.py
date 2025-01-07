@@ -16,7 +16,11 @@ def test_update_unknown_family(client: TestClient) -> None:
     [
         {"email": "test_email"},
         {"phone_number": "phone_test"},
-        {"email": "test_email", "phone_number": "phone_test", "last_adhesion_date": "2025-01-06"},
+        {
+            "email": "test_email",
+            "phone_number": "phone_test",
+            "last_adhesion_date": "2025-01-06",
+        },
     ],
 )
 @pytest.mark.parametrize(
@@ -25,7 +29,11 @@ def test_update_unknown_family(client: TestClient) -> None:
         {"email": "new_email"},
         {"phone_number": "new"},
         {"last_adhesion_date": "2024-12-06"},
-        {"email": "new_test_email", "phone_number": "new_phone_test", "last_adhesion_date": "2022-01-06"},
+        {
+            "email": "new_test_email",
+            "phone_number": "new_phone_test",
+            "last_adhesion_date": "2022-01-06",
+        },
         {},
     ],
 )

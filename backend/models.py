@@ -1,7 +1,7 @@
 from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional
-from pydantic import PositiveInt, model_validator, ValidationInfo
+from pydantic import PositiveInt, model_validator
 from pydantic_extra_types.language_code import LanguageAlpha2
 
 # from fastapi_users.db import SQLAlchemyBaseUserTableUUID
@@ -118,7 +118,9 @@ class FamilyBase(SharedBase):
     @model_validator(mode="after")
     def check_rule_content(self) -> Self:
         if self.email is None and self.phone_number is None:
-            raise ValueError(f"A family must have at least one email or one phone number.")
+            raise ValueError(
+                "A family must have at least one email or one phone number."
+            )
         return self
 
 
