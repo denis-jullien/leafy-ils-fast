@@ -1,12 +1,13 @@
 from datetime import date
 from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional
-from pydantic import PositiveInt
+from pydantic import PositiveInt, model_validator
 from pydantic_extra_types.language_code import LanguageAlpha2
 
 # from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 from fastapi_users_db_sqlmodel import SQLModelBaseUserDB
 from fastapi_users import schemas
+from typing_extensions import Self
 import uuid
 
 # User (for authentification)
@@ -112,7 +113,15 @@ class BookUpdate(SharedUpdate):
 class FamilyBase(SharedBase):
     email: Optional[str] = None
     phone_number: Optional[str] = None
-    # last_adhesion_date: Optional[date] = None
+    last_adhesion_date: Optional[date] = None
+
+    @model_validator(mode="after")
+    def check_rule_content(self) -> Self:
+        if self.email is None and self.phone_number is None:
+            raise ValueError(
+                "A family must have at least one email or one phone number."
+            )
+        return self
 
 
 class FamilyTable(FamilyBase, table=True):
@@ -136,7 +145,7 @@ class FamilyCreate(FamilyBase):
 class FamilyUpdate(SharedUpdate):
     email: Optional[str] = None
     phone_number: Optional[str] = None
-    # last_adhesion_date: Optional[date] = None
+    last_adhesion_date: Optional[date] = None
 
 
 # Member
